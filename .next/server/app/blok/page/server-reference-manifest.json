@@ -1,0 +1,65 @@
+{
+  "node": {
+    "00410f6b082ad9fd0f0d3a1932d4fee464cf297d77": {
+      "workers": {
+        "app/blok/page": {
+          "moduleId": 67893,
+          "async": true,
+          "exportedName": "getStrukturKebun",
+          "filename": "src/lib/actions.ts"
+        }
+      },
+      "exportedName": "getStrukturKebun",
+      "filename": "src/lib/actions.ts"
+    },
+    "4016aad0a249687cf05544cbb427114f3244e6c99d": {
+      "workers": {
+        "app/blok/page": {
+          "moduleId": 67893,
+          "async": true,
+          "exportedName": "hapusBlok",
+          "filename": "src/lib/actions.ts"
+        }
+      },
+      "exportedName": "hapusBlok",
+      "filename": "src/lib/actions.ts"
+    },
+    "78203f8fd422b7956dbd94c238b5212c030fc30552": {
+      "workers": {
+        "app/blok/page": {
+          "moduleId": 67893,
+          "async": true,
+          "exportedName": "tambahAfdeling",
+          "filename": "src/lib/actions.ts"
+        }
+      },
+      "exportedName": "tambahAfdeling",
+      "filename": "src/lib/actions.ts"
+    },
+    "40e31f575abd04409f93d19077b26c0d38a8e7a63e": {
+      "workers": {
+        "app/blok/page": {
+          "moduleId": 67893,
+          "async": true,
+          "exportedName": "tambahBlok",
+          "filename": "src/lib/actions.ts"
+        }
+      },
+      "exportedName": "tambahBlok",
+      "filename": "src/lib/actions.ts"
+    },
+    "703a12983e6aff59b6bbd67a88bc2dea43843b36ac": {
+      "workers": {
+        "app/blok/page": {
+          "moduleId": 67893,
+          "async": true,
+          "exportedName": "tambahKebun",
+          "filename": "src/lib/actions.ts"
+        }
+      },
+      "exportedName": "tambahKebun",
+      "filename": "src/lib/actions.ts"
+    }
+  },
+  "edge": {}
+}

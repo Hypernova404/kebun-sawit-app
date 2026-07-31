@@ -1,0 +1,21 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/bep/page": "app/bep/page.js",
+  "/bibit/page": "app/bibit/page.js",
+  "/blok/[id]/page": "app/blok/[id]/page.js",
+  "/blok/page": "app/blok/page.js",
+  "/desain-blok/page": "app/desain-blok/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/kebutuhan-pupuk/page": "app/kebutuhan-pupuk/page.js",
+  "/konversi/page": "app/konversi/page.js",
+  "/page": "app/page.js",
+  "/pemanen/page": "app/pemanen/page.js",
+  "/pemupukan/page": "app/pemupukan/page.js",
+  "/pengiriman/page": "app/pengiriman/page.js",
+  "/populasi/page": "app/populasi/page.js",
+  "/produksi/page": "app/produksi/page.js",
+  "/rendemen/page": "app/rendemen/page.js",
+  "/riwayat/[id]/page": "app/riwayat/[id]/page.js",
+  "/riwayat/page": "app/riwayat/page.js"
+}

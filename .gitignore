@@ -1,0 +1,6 @@
+.env
+node_modules
+next-env.d.ts
+generated
+*.db
+*.db-journal

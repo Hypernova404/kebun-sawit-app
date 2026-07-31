@@ -1,0 +1,29 @@
+{
+  "node": {
+    "00410f6b082ad9fd0f0d3a1932d4fee464cf297d77": {
+      "workers": {
+        "app/kebutuhan-pupuk/page": {
+          "moduleId": 9548,
+          "async": true,
+          "exportedName": "getStrukturKebun",
+          "filename": "src/lib/actions.ts"
+        }
+      },
+      "exportedName": "getStrukturKebun",
+      "filename": "src/lib/actions.ts"
+    },
+    "78b1516f8ea88d6ded8850dc0624be2869825f9355": {
+      "workers": {
+        "app/kebutuhan-pupuk/page": {
+          "moduleId": 9548,
+          "async": true,
+          "exportedName": "simpanRiwayat",
+          "filename": "src/lib/actions.ts"
+        }
+      },
+      "exportedName": "simpanRiwayat",
+      "filename": "src/lib/actions.ts"
+    }
+  },
+  "edge": {}
+}

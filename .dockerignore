@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+dev.db
+*.db
+*.db-journal
+generated
+next-env.d.ts
+README.md
+.gitignore
+npm-debug.log*

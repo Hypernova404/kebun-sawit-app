@@ -1,0 +1,21 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/bep/page": "/bep",
+  "/bibit/page": "/bibit",
+  "/blok/[id]/page": "/blok/[id]",
+  "/blok/page": "/blok",
+  "/desain-blok/page": "/desain-blok",
+  "/favicon.ico/route": "/favicon.ico",
+  "/kebutuhan-pupuk/page": "/kebutuhan-pupuk",
+  "/konversi/page": "/konversi",
+  "/page": "/",
+  "/pemanen/page": "/pemanen",
+  "/pemupukan/page": "/pemupukan",
+  "/pengiriman/page": "/pengiriman",
+  "/populasi/page": "/populasi",
+  "/produksi/page": "/produksi",
+  "/rendemen/page": "/rendemen",
+  "/riwayat/[id]/page": "/riwayat/[id]",
+  "/riwayat/page": "/riwayat"
+}

@@ -1,0 +1,56 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated"
+}
+
+model Kebun {
+  id         String     @id @default(cuid())
+  nama       String
+  lokasi     String?
+  wilayah    String     @default("Kalimantan Barat")
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  afdelingen Afdeling[]
+}
+
+model Afdeling {
+  id      String  @id @default(cuid())
+  kebunId String
+  kode    String
+  nama    String?
+  luasHa  Float
+  kebun   Kebun   @relation(fields: [kebunId], references: [id], onDelete: Cascade)
+  bloks   Blok[]
+  @@unique([kebunId, kode])
+}
+
+model Blok {
+  id             String   @id @default(cuid())
+  afdelingId     String
+  kode           String   @unique
+  luasHa         Float
+  tahunTanam     Int
+  jumlahPokok    Int      @default(0)
+  varietas       String?
+  jenisLahan     String   @default("mineral")
+  dosisOverride  String?
+  afdeling       Afdeling @relation(fields: [afdelingId], references: [id], onDelete: Cascade)
+  riwayats       RiwayatKalkulasi[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model RiwayatKalkulasi {
+  id         String   @id @default(cuid())
+  jenisMenu  String
+  tanggal    DateTime @default(now())
+  dataInput  String
+  dataHasil  String
+  blokId     String?
+  blok       Blok?    @relation(fields: [blokId], references: [id], onDelete: SetNull)
+  createdAt  DateTime @default(now())
+}

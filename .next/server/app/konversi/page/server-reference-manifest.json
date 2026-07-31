@@ -1,0 +1,17 @@
+{
+  "node": {
+    "78b1516f8ea88d6ded8850dc0624be2869825f9355": {
+      "workers": {
+        "app/konversi/page": {
+          "moduleId": 68638,
+          "async": true,
+          "exportedName": "simpanRiwayat",
+          "filename": "src/lib/actions.ts"
+        }
+      },
+      "exportedName": "simpanRiwayat",
+      "filename": "src/lib/actions.ts"
+    }
+  },
+  "edge": {}
+}

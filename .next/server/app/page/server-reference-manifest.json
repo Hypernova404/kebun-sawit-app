@@ -1,0 +1,17 @@
+{
+  "node": {
+    "001f1530d6355d5b7f2cb68ab6d4a119c982b3d46f": {
+      "workers": {
+        "app/page": {
+          "moduleId": 45739,
+          "async": true,
+          "exportedName": "getDashboard",
+          "filename": "src/lib/actions.ts"
+        }
+      },
+      "exportedName": "getDashboard",
+      "filename": "src/lib/actions.ts"
+    }
+  },
+  "edge": {}
+}

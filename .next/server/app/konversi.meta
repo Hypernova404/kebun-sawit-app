@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/konversi/layout,_N_T_/konversi/page,_N_T_/konversi"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/konversi/__PAGE__",
+    "/konversi",
+    "/_index",
+    "/_head"
+  ]
+}
