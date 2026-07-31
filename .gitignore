@@ -4,3 +4,6 @@ next-env.d.ts
 generated
 *.db
 *.db-journal
+
+.next/
+tsconfig.tsbuildinfo
