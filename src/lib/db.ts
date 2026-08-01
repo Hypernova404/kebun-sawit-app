@@ -1,11 +1,16 @@
 import { PrismaClient } from "../../generated/client"
 import { PrismaLibSql } from "@prisma/adapter-libsql"
+import { PrismaLibSql as PrismaLibSqlWeb } from "@prisma/adapter-libsql/web"
 import { cache } from "react"
 
 const makeAdapter = () => {
   const url = process.env.DATABASE_URL ?? "file:./dev.db"
   const authToken = process.env.TURSO_AUTH_TOKEN
-  return new PrismaLibSql(authToken ? { url, authToken } : { url })
+  const opts = authToken ? { url, authToken } : { url }
+  if (url.startsWith("file:")) {
+    return new PrismaLibSql(opts)
+  }
+  return new PrismaLibSqlWeb(opts)
 }
 
 export const getDb = cache(() => {

@@ -1,9 +1,11 @@
 import { PrismaClient } from "../generated/client"
 import { PrismaLibSql } from "@prisma/adapter-libsql"
+import { PrismaLibSql as PrismaLibSqlWeb } from "@prisma/adapter-libsql/web"
 
 const url = process.env.DATABASE_URL ?? "file:./dev.db"
 const authToken = process.env.TURSO_AUTH_TOKEN
-const adapter = new PrismaLibSql(authToken ? { url, authToken } : { url })
+const opts = authToken ? { url, authToken } : { url }
+const adapter = url.startsWith("file:") ? new PrismaLibSql(opts) : new PrismaLibSqlWeb(opts)
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
