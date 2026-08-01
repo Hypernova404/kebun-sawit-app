@@ -1,30 +1,34 @@
 import { NextResponse } from "next/server"
-import { createClient } from "@libsql/client/web"
 
 export const dynamic = "force-dynamic"
 
 export async function GET() {
-  const out: Record<string, unknown> = {}
-  try {
-    const client = createClient({
-      url: process.env.DATABASE_URL ?? "",
-      authToken: process.env.TURSO_AUTH_TOKEN,
-    })
-    const simple = await client.execute({ sql: "SELECT COUNT(*) AS n FROM Blok" })
-    out.simple = simple.rows
+  const url = process.env.DATABASE_URL ?? ""
+  const token = process.env.TURSO_AUTH_TOKEN ?? ""
+  const endpoint = `${url}/v2/pipeline`
+  const results: Record<string, unknown> = { endpoint }
+
+  const attempt = async (label: string, body: unknown, headers: Record<string, string> = {}) => {
     try {
-      const raw = await client.execute({ sql: "SELECT * FROM Blok ORDER BY kode LIMIT 3" })
-      out.raw = raw.rows
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${token}`, ...headers },
+        body: JSON.stringify(body),
+      })
+      const text = await res.text()
+      results[label] = { status: res.status, body: text.slice(0, 500) }
     } catch (e) {
-      out.rawErr = String((e as Error).message)
+      results[label] = { error: String((e as Error).message) }
     }
-    await client.close()
-    out.final = "ok"
-  } catch (e) {
-    const err = e as Error
-    out.final = "error"
-    out.error = err.message
-    out.cause = String((err as { cause?: unknown }).cause)
   }
-  return NextResponse.json(out)
+
+  await attempt("select1", {
+    requests: [{ type: "execute", stmt: { sql: "SELECT 1 AS x" }, wantRows: true }],
+  })
+  await attempt("noRows", {
+    requests: [{ type: "execute", stmt: { sql: "SELECT 1 AS x" } }],
+  })
+  await attempt("badBody", { requests: "nope" })
+
+  return NextResponse.json(results)
 }
