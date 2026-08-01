@@ -2,8 +2,9 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ChevronDown, Leaf, LayoutDashboard } from "lucide-react"
+import { ChevronDown, Leaf, LayoutDashboard, LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { authClient } from "@/lib/auth-client"
 import { BOTTOM_NAV, NAV_GROUPS } from "./nav"
 
 export function Sidebar() {
@@ -68,12 +69,17 @@ export function Sidebar() {
             )
           })}
         </nav>
-        <div className="border-t border-border px-6 py-4">
-          <p className="text-[11px] text-muted-foreground">
-            Baseline dosis: SOP Agro-07/03 & BRMP Babel
-            <br />
-            Harga default: pasar Kalimantan
-          </p>
+        <div className="border-t border-border px-4 py-3">
+          <button
+            onClick={async () => {
+              await authClient.signOut()
+              window.location.href = "/masuk"
+            }}
+            className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <LogOut data-icon />
+            Keluar
+          </button>
         </div>
       </aside>
 

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
-import { Download, FileText, Filter } from "lucide-react"
+import { Download, FileText, Filter, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { PageHeader } from "@/components/page-header"
 import { Skeleton } from "@/components/ui/skeleton"
-import { getRiwayat, downloadPDF } from "@/lib/actions"
+import { getRiwayat, downloadPDF, hapusRiwayat } from "@/lib/actions"
 import { LABEL_MENU } from "@/lib/label-menu"
 import { b64ToBlob, downloadBlob } from "@/lib/client-file"
 
@@ -67,6 +67,18 @@ export default function RiwayatPage() {
     }
     const blob = b64ToBlob(res.buffer as string, "application/pdf")
     downloadBlob(blob, `riwayat-kalkulasi-${new Date().toISOString().slice(0, 10)}.pdf`)
+  }
+
+  const hapus = async (id: string) => {
+    if (!confirm("Hapus entri riwayat ini? Tindakan ini tidak bisa dibatalkan.")) return
+    setBusy(true)
+    const res = await hapusRiwayat(id)
+    setBusy(false)
+    if (res && "error" in res && res.error) {
+      alert(res.error)
+      return
+    }
+    load()
   }
 
   return (
@@ -156,9 +168,19 @@ export default function RiwayatPage() {
                       <TableCell>{e.blok_kode ?? "—"}</TableCell>
                       <TableCell>{new Date(e.tanggal).toLocaleString("id-ID")}</TableCell>
                       <TableCell className="text-right">
-                        <Link href={`/riwayat/${e.id}`} className="text-sm text-primary hover:underline">
-                          Buka
-                        </Link>
+                        <div className="flex items-center justify-end gap-3">
+                          <Link href={`/riwayat/${e.id}`} className="text-sm text-primary hover:underline">
+                            Buka
+                          </Link>
+                          <button
+                            onClick={() => hapus(e.id)}
+                            disabled={busy}
+                            className="text-muted-foreground transition-colors hover:text-destructive disabled:opacity-50"
+                            aria-label={`Hapus entri ${e.id}`}
+                          >
+                            <Trash2 data-icon className="size-4" />
+                          </button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

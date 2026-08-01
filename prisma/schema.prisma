@@ -1,3 +1,4 @@
+
 datasource db {
   provider = "sqlite"
 }
@@ -9,12 +10,17 @@ generator client {
 
 model Kebun {
   id         String     @id @default(cuid())
+  userId     String
   nama       String
   lokasi     String?
   wilayah    String     @default("Kalimantan Barat")
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   afdelingen Afdeling[]
+  bloks      Blok[]
+
+  @@index([userId])
 }
 
 model Afdeling {
@@ -25,32 +31,107 @@ model Afdeling {
   luasHa  Float
   kebun   Kebun   @relation(fields: [kebunId], references: [id], onDelete: Cascade)
   bloks   Blok[]
+
   @@unique([kebunId, kode])
 }
 
 model Blok {
-  id             String   @id @default(cuid())
-  afdelingId     String
-  kode           String   @unique
-  luasHa         Float
-  tahunTanam     Int
-  jumlahPokok    Int      @default(0)
-  varietas       String?
-  jenisLahan     String   @default("mineral")
-  dosisOverride  String?
-  afdeling       Afdeling @relation(fields: [afdelingId], references: [id], onDelete: Cascade)
-  riwayats       RiwayatKalkulasi[]
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id            String             @id @default(cuid())
+  afdelingId    String
+  kebunId       String
+  kode          String
+  luasHa        Float
+  tahunTanam    Int
+  jumlahPokok   Int                @default(0)
+  varietas      String?
+  jenisLahan    String             @default("mineral")
+  dosisOverride String?
+  afdeling      Afdeling           @relation(fields: [afdelingId], references: [id], onDelete: Cascade)
+  kebun         Kebun              @relation(fields: [kebunId], references: [id], onDelete: Cascade)
+  riwayats      RiwayatKalkulasi[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@unique([kebunId, kode])
 }
 
 model RiwayatKalkulasi {
-  id         String   @id @default(cuid())
-  jenisMenu  String
-  tanggal    DateTime @default(now())
-  dataInput  String
-  dataHasil  String
-  blokId     String?
-  blok       Blok?    @relation(fields: [blokId], references: [id], onDelete: SetNull)
+  id        String   @id @default(cuid())
+  userId    String
+  jenisMenu String
+  tanggal   DateTime @default(now())
+  dataInput String
+  dataHasil String
+  blokId    String?
+  blok      Blok?    @relation(fields: [blokId], references: [id], onDelete: SetNull)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([jenisMenu, tanggal])
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  kebuns        Kebun[]
+  riwayats      RiwayatKalkulasi[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
-import { Sidebar } from "@/components/layout/sidebar";
 import "./globals.css";
 
 const inter = Inter({
@@ -24,8 +23,7 @@ export default function RootLayout({
   return (
     <html lang="id" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex">
-        <Sidebar />
-        <main className="flex-1 min-w-0 bg-canvas pb-16 lg:pb-0">{children}</main>
+        {children}
         <Toaster position="top-right" />
       </body>
     </html>

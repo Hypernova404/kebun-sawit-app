@@ -4,6 +4,13 @@ import { revalidatePath } from "next/cache"
 import { getDb } from "./db"
 import { hitungStatusBlok } from "./engine/populasi"
 import { generatePDF } from "./pdf"
+import { getSessionUser } from "./session"
+
+async function requireUserId(): Promise<string> {
+  const user = await getSessionUser()
+  if (!user) throw new Error("Silakan masuk terlebih dahulu")
+  return user.id
+}
 
 export type StrukturKebun = {
   id: string
@@ -30,7 +37,9 @@ export type StrukturKebun = {
 }
 
 export async function getStrukturKebun(): Promise<StrukturKebun[]> {
+  const userId = await requireUserId()
   const kebuns = await getDb().kebun.findMany({
+    where: { userId },
     orderBy: { createdAt: "asc" },
     include: {
       afdelingen: {
@@ -56,14 +65,16 @@ export async function getStrukturKebun(): Promise<StrukturKebun[]> {
 
 export async function tambahKebun(nama: string, lokasi: string, wilayah: string) {
   if (!nama.trim()) return { error: "Nama kebun wajib diisi" }
-  await getDb().kebun.create({ data: { nama: nama.trim(), lokasi: lokasi.trim() || null, wilayah } })
+  const userId = await requireUserId()
+  await getDb().kebun.create({ data: { userId, nama: nama.trim(), lokasi: lokasi.trim() || null, wilayah } })
   revalidatePath("/")
 }
 
 export async function tambahAfdeling(kebunId: string, kode: string, nama: string, luasHa: number) {
   if (!kebunId || !kode.trim()) return { error: "Kebun dan kode afdeling wajib diisi" }
   if (luasHa <= 0) return { error: "Luas afdeling harus > 0" }
-  const kebun = await getDb().kebun.findUnique({ where: { id: kebunId } })
+  const userId = await requireUserId()
+  const kebun = await getDb().kebun.findFirst({ where: { id: kebunId, userId } })
   if (!kebun) return { error: "Kebun tidak ditemukan" }
   await getDb().afdeling.create({ data: { kebunId, kode: kode.trim().toUpperCase(), nama: nama.trim() || null, luasHa } })
   revalidatePath("/")
@@ -84,13 +95,19 @@ export async function tambahBlok(input: InputBlok) {
   if (!input.afdelingId || !input.kode.trim()) return { error: "Afdeling dan kode blok wajib diisi" }
   if (input.luasHa <= 0) return { error: "Luas blok harus > 0" }
   if (input.tahunTanam > tahun) return { error: "tahun_tanam tidak boleh di masa depan" }
-  const afdeling = await getDb().afdeling.findUnique({ where: { id: input.afdelingId } })
+  const userId = await requireUserId()
+  const afdeling = await getDb().afdeling.findFirst({
+    where: { id: input.afdelingId, kebun: { userId } },
+  })
   if (!afdeling) return { error: "Afdeling tidak ditemukan" }
-  const exist = await getDb().blok.findUnique({ where: { kode: input.kode.trim().toUpperCase() } })
+  const exist = await getDb().blok.findFirst({
+    where: { kebunId: afdeling.kebunId, kode: input.kode.trim().toUpperCase() },
+  })
   if (exist) return { error: `Kode blok ${input.kode} sudah dipakai` }
   await getDb().blok.create({
     data: {
       afdelingId: input.afdelingId,
+      kebunId: afdeling.kebunId,
       kode: input.kode.trim().toUpperCase(),
       luasHa: input.luasHa,
       tahunTanam: input.tahunTanam,
@@ -103,10 +120,11 @@ export async function tambahBlok(input: InputBlok) {
 }
 
 export async function updateBlok(id: string, input: Partial<InputBlok>) {
-  const blok = await getDb().blok.findUnique({ where: { id } })
-  if (!blok) return { error: "Blok tidak ditemukan" }
   if (input.tahunTanam != null && input.tahunTanam > new Date().getFullYear())
     return { error: "tahun_tanam tidak boleh di masa depan" }
+  const userId = await requireUserId()
+  const blok = await getDb().blok.findFirst({ where: { id, kebun: { userId } } })
+  if (!blok) return { error: "Blok tidak ditemukan" }
   await getDb().blok.update({
     where: { id },
     data: {
@@ -122,24 +140,30 @@ export async function updateBlok(id: string, input: Partial<InputBlok>) {
 }
 
 export async function hapusBlok(id: string) {
+  const userId = await requireUserId()
+  const blok = await getDb().blok.findFirst({ where: { id, kebun: { userId } } })
+  if (!blok) return { error: "Blok tidak ditemukan" }
   await getDb().blok.delete({ where: { id } })
   revalidatePath("/")
 }
 
 export async function simpanDosisOverride(blokId: string, dosisOverride: Record<string, number>) {
-  const blok = await getDb().blok.findUnique({ where: { id: blokId } })
+  const userId = await requireUserId()
+  const blok = await getDb().blok.findFirst({ where: { id: blokId, kebun: { userId } } })
   if (!blok) return { error: "Blok tidak ditemukan" }
   await getDb().blok.update({ where: { id: blokId }, data: { dosisOverride: JSON.stringify(dosisOverride) } })
   revalidatePath("/")
 }
 
 export async function simpanRiwayat(jenisMenu: string, dataInput: unknown, dataHasil: unknown, blokId?: string | null) {
+  const userId = await requireUserId()
   if (blokId) {
-    const blok = await getDb().blok.findUnique({ where: { id: blokId } })
+    const blok = await getDb().blok.findFirst({ where: { id: blokId, kebun: { userId } } })
     if (!blok) return { error: { code: "NOT_FOUND", message: "blok_id tidak ditemukan" } }
   }
   const entry = await getDb().riwayatKalkulasi.create({
     data: {
+      userId,
       jenisMenu,
       dataInput: JSON.stringify(dataInput),
       dataHasil: JSON.stringify(dataHasil),
@@ -151,9 +175,11 @@ export async function simpanRiwayat(jenisMenu: string, dataInput: unknown, dataH
 }
 
 export async function getRiwayat(filterKategori?: string | null, filterBlok?: string | null) {
+  const userId = await requireUserId()
   const blokKode = filterBlok?.trim().toUpperCase()
   const riwayats = await getDb().riwayatKalkulasi.findMany({
     where: {
+      userId,
       jenisMenu: filterKategori || undefined,
       blok: blokKode ? { kode: { contains: blokKode } } : undefined,
     },
@@ -172,15 +198,16 @@ export async function getRiwayat(filterKategori?: string | null, filterBlok?: st
 }
 
 export async function getDetailBlok(blokId: string) {
-  const blok = await getDb().blok.findUnique({
-    where: { id: blokId },
+  const userId = await requireUserId()
+  const blok = await getDb().blok.findFirst({
+    where: { id: blokId, kebun: { userId } },
     include: { afdeling: { include: { kebun: true } } },
   })
   if (!blok) return null
   const tahun = new Date().getFullYear()
   const status = hitungStatusBlok(blok.tahunTanam, tahun).data!
   const riwayat = await getDb().riwayatKalkulasi.findMany({
-    where: { blokId },
+    where: { userId, blokId },
     orderBy: { tanggal: "desc" },
     take: 20,
   })
@@ -216,18 +243,22 @@ export async function getDetailBlok(blokId: string) {
 }
 
 export async function getDashboard() {
-  const bloks = await getDb().blok.findMany({ select: { luasHa: true } })
+  const userId = await requireUserId()
+  const bloks = await getDb().blok.findMany({
+    where: { kebun: { userId } },
+    select: { luasHa: true },
+  })
   const totalLuas = bloks.reduce((s, b) => s + b.luasHa, 0)
 
   const sekarang = new Date()
   const bulanAwal = new Date(sekarang.getFullYear(), sekarang.getMonth(), 1)
 
   const panen = await getDb().riwayatKalkulasi.findMany({
-    where: { jenisMenu: "pengiriman_tbs", tanggal: { gte: bulanAwal } },
+    where: { userId, jenisMenu: "pengiriman_tbs", tanggal: { gte: bulanAwal } },
     orderBy: { tanggal: "asc" },
   })
   const pupuk = await getDb().riwayatKalkulasi.findMany({
-    where: { jenisMenu: "kebutuhan_pupuk", tanggal: { gte: bulanAwal } },
+    where: { userId, jenisMenu: "kebutuhan_pupuk", tanggal: { gte: bulanAwal } },
   })
 
   let totalProduksi = 0
@@ -251,7 +282,7 @@ export async function getDashboard() {
     const start = new Date(sekarang.getFullYear(), sekarang.getMonth() - i, 1)
     const end = new Date(sekarang.getFullYear(), sekarang.getMonth() - i + 1, 1)
     const entries = await getDb().riwayatKalkulasi.findMany({
-      where: { jenisMenu: "pengiriman_tbs", tanggal: { gte: start, lt: end } },
+      where: { userId, jenisMenu: "pengiriman_tbs", tanggal: { gte: start, lt: end } },
     })
     const tonase = entries.reduce((s, e) => s + ((JSON.parse(e.dataInput) as { tonase?: number }).tonase ?? 0), 0)
     tren.push({
@@ -271,10 +302,20 @@ export async function getDashboard() {
   }
 }
 
+export async function hapusRiwayat(id: string) {
+  const userId = await requireUserId()
+  const entry = await getDb().riwayatKalkulasi.findFirst({ where: { id, userId } })
+  if (!entry) return { error: "Entri tidak ditemukan" }
+  await getDb().riwayatKalkulasi.delete({ where: { id } })
+  revalidatePath("/")
+  return { ok: true }
+}
+
 export async function downloadPDF(entryIds: string[]) {
   if (!entryIds.length) return { error: "Pilih minimal 1 entri" }
+  const userId = await requireUserId()
   const rows = await getDb().riwayatKalkulasi.findMany({
-    where: { id: { in: entryIds } },
+    where: { id: { in: entryIds }, userId },
     include: { blok: { select: { kode: true } } },
     orderBy: { tanggal: "desc" },
   })

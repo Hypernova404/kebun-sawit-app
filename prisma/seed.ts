@@ -9,8 +9,20 @@ const adapter = url.startsWith("file:") ? new PrismaLibSql(opts) : new PrismaLib
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
+  const user = await prisma.user.upsert({
+    where: { email: "demo@example.com" },
+    update: {},
+    create: {
+      id: crypto.randomUUID(),
+      email: "demo@example.com",
+      name: "Demo User",
+      emailVerified: true,
+    },
+  })
+
   const kebun = await prisma.kebun.create({
     data: {
+      userId: user.id,
       nama: "Kebun Sungai Deras",
       lokasi: "Kabupaten Ketapang, Kalimantan Barat",
       wilayah: "Kalimantan Barat",
@@ -26,15 +38,15 @@ async function main() {
 
   await prisma.blok.createMany({
     data: [
-      { afdelingId: afdeling1.id, kode: "A1-01", luasHa: 29.5, tahunTanam: 2016, jumlahPokok: 4218, varietas: "Tenera", jenisLahan: "mineral" },
-      { afdelingId: afdeling1.id, kode: "A1-02", luasHa: 30.2, tahunTanam: 2018, jumlahPokok: 4319, varietas: "Tenera", jenisLahan: "mineral" },
-      { afdelingId: afdeling1.id, kode: "A1-03", luasHa: 28.8, tahunTanam: 2013, jumlahPokok: 4118, varietas: "Tenera", jenisLahan: "gambut" },
-      { afdelingId: afdeling2.id, kode: "A2-01", luasHa: 30.5, tahunTanam: 2023, jumlahPokok: 4362, varietas: "Tenera", jenisLahan: "mineral" },
-      { afdelingId: afdeling2.id, kode: "A2-02", luasHa: 27.9, tahunTanam: 2020, jumlahPokok: 3989, varietas: "Dura", jenisLahan: "pasir" },
+      { kebunId: kebun.id, afdelingId: afdeling1.id, kode: "A1-01", luasHa: 29.5, tahunTanam: 2016, jumlahPokok: 4218, varietas: "Tenera", jenisLahan: "mineral" },
+      { kebunId: kebun.id, afdelingId: afdeling1.id, kode: "A1-02", luasHa: 30.2, tahunTanam: 2018, jumlahPokok: 4319, varietas: "Tenera", jenisLahan: "mineral" },
+      { kebunId: kebun.id, afdelingId: afdeling1.id, kode: "A1-03", luasHa: 28.8, tahunTanam: 2013, jumlahPokok: 4118, varietas: "Tenera", jenisLahan: "gambut" },
+      { kebunId: kebun.id, afdelingId: afdeling2.id, kode: "A2-01", luasHa: 30.5, tahunTanam: 2023, jumlahPokok: 4362, varietas: "Tenera", jenisLahan: "mineral" },
+      { kebunId: kebun.id, afdelingId: afdeling2.id, kode: "A2-02", luasHa: 27.9, tahunTanam: 2020, jumlahPokok: 3989, varietas: "Dura", jenisLahan: "pasir" },
     ],
   })
 
-  console.log("Seed selesai: 1 kebun, 2 afdeling, 5 blok")
+  console.log("Seed selesai: 1 user, 1 kebun, 2 afdeling, 5 blok")
 }
 
 main()
