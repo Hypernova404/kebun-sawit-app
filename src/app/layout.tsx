@@ -14,6 +14,8 @@ export const metadata: Metadata = {
   description: "Kalkulator agronomi & manajemen kebun kelapa sawit: populasi, pemupukan, produksi, ekonomi, dan laporan.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({
   children,
 }: Readonly<{

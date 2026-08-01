@@ -1,15 +1,17 @@
 import { PrismaClient } from "../../generated/client"
 import { PrismaLibSql } from "@prisma/adapter-libsql"
+import { cache } from "react"
 
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient }
-
-function createClient() {
-  const adapter = new PrismaLibSql({
-    url: process.env.DATABASE_URL ?? "file:./dev.db",
-  })
-  return new PrismaClient({ adapter })
+const makeAdapter = () => {
+  const url = process.env.DATABASE_URL ?? "file:./dev.db"
+  const authToken = process.env.TURSO_AUTH_TOKEN
+  return new PrismaLibSql(authToken ? { url, authToken } : { url })
 }
 
-export const prisma = globalForPrisma.prisma ?? createClient()
+export const getDb = cache(() => {
+  return new PrismaClient({ adapter: makeAdapter() })
+})
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma
+export const getDbAsync = async () => {
+  return new PrismaClient({ adapter: makeAdapter() })
+}

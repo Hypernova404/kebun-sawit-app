@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { prisma } from "./db"
+import { getDb } from "./db"
 import { hitungStatusBlok } from "./engine/populasi"
 import { generatePDF } from "./pdf"
 
@@ -30,7 +30,7 @@ export type StrukturKebun = {
 }
 
 export async function getStrukturKebun(): Promise<StrukturKebun[]> {
-  const kebuns = await prisma.kebun.findMany({
+  const kebuns = await getDb().kebun.findMany({
     orderBy: { createdAt: "asc" },
     include: {
       afdelingen: {
@@ -56,16 +56,16 @@ export async function getStrukturKebun(): Promise<StrukturKebun[]> {
 
 export async function tambahKebun(nama: string, lokasi: string, wilayah: string) {
   if (!nama.trim()) return { error: "Nama kebun wajib diisi" }
-  await prisma.kebun.create({ data: { nama: nama.trim(), lokasi: lokasi.trim() || null, wilayah } })
+  await getDb().kebun.create({ data: { nama: nama.trim(), lokasi: lokasi.trim() || null, wilayah } })
   revalidatePath("/")
 }
 
 export async function tambahAfdeling(kebunId: string, kode: string, nama: string, luasHa: number) {
   if (!kebunId || !kode.trim()) return { error: "Kebun dan kode afdeling wajib diisi" }
   if (luasHa <= 0) return { error: "Luas afdeling harus > 0" }
-  const kebun = await prisma.kebun.findUnique({ where: { id: kebunId } })
+  const kebun = await getDb().kebun.findUnique({ where: { id: kebunId } })
   if (!kebun) return { error: "Kebun tidak ditemukan" }
-  await prisma.afdeling.create({ data: { kebunId, kode: kode.trim().toUpperCase(), nama: nama.trim() || null, luasHa } })
+  await getDb().afdeling.create({ data: { kebunId, kode: kode.trim().toUpperCase(), nama: nama.trim() || null, luasHa } })
   revalidatePath("/")
 }
 
@@ -84,11 +84,11 @@ export async function tambahBlok(input: InputBlok) {
   if (!input.afdelingId || !input.kode.trim()) return { error: "Afdeling dan kode blok wajib diisi" }
   if (input.luasHa <= 0) return { error: "Luas blok harus > 0" }
   if (input.tahunTanam > tahun) return { error: "tahun_tanam tidak boleh di masa depan" }
-  const afdeling = await prisma.afdeling.findUnique({ where: { id: input.afdelingId } })
+  const afdeling = await getDb().afdeling.findUnique({ where: { id: input.afdelingId } })
   if (!afdeling) return { error: "Afdeling tidak ditemukan" }
-  const exist = await prisma.blok.findUnique({ where: { kode: input.kode.trim().toUpperCase() } })
+  const exist = await getDb().blok.findUnique({ where: { kode: input.kode.trim().toUpperCase() } })
   if (exist) return { error: `Kode blok ${input.kode} sudah dipakai` }
-  await prisma.blok.create({
+  await getDb().blok.create({
     data: {
       afdelingId: input.afdelingId,
       kode: input.kode.trim().toUpperCase(),
@@ -103,11 +103,11 @@ export async function tambahBlok(input: InputBlok) {
 }
 
 export async function updateBlok(id: string, input: Partial<InputBlok>) {
-  const blok = await prisma.blok.findUnique({ where: { id } })
+  const blok = await getDb().blok.findUnique({ where: { id } })
   if (!blok) return { error: "Blok tidak ditemukan" }
   if (input.tahunTanam != null && input.tahunTanam > new Date().getFullYear())
     return { error: "tahun_tanam tidak boleh di masa depan" }
-  await prisma.blok.update({
+  await getDb().blok.update({
     where: { id },
     data: {
       luasHa: input.luasHa ?? undefined,
@@ -122,23 +122,23 @@ export async function updateBlok(id: string, input: Partial<InputBlok>) {
 }
 
 export async function hapusBlok(id: string) {
-  await prisma.blok.delete({ where: { id } })
+  await getDb().blok.delete({ where: { id } })
   revalidatePath("/")
 }
 
 export async function simpanDosisOverride(blokId: string, dosisOverride: Record<string, number>) {
-  const blok = await prisma.blok.findUnique({ where: { id: blokId } })
+  const blok = await getDb().blok.findUnique({ where: { id: blokId } })
   if (!blok) return { error: "Blok tidak ditemukan" }
-  await prisma.blok.update({ where: { id: blokId }, data: { dosisOverride: JSON.stringify(dosisOverride) } })
+  await getDb().blok.update({ where: { id: blokId }, data: { dosisOverride: JSON.stringify(dosisOverride) } })
   revalidatePath("/")
 }
 
 export async function simpanRiwayat(jenisMenu: string, dataInput: unknown, dataHasil: unknown, blokId?: string | null) {
   if (blokId) {
-    const blok = await prisma.blok.findUnique({ where: { id: blokId } })
+    const blok = await getDb().blok.findUnique({ where: { id: blokId } })
     if (!blok) return { error: { code: "NOT_FOUND", message: "blok_id tidak ditemukan" } }
   }
-  const entry = await prisma.riwayatKalkulasi.create({
+  const entry = await getDb().riwayatKalkulasi.create({
     data: {
       jenisMenu,
       dataInput: JSON.stringify(dataInput),
@@ -152,7 +152,7 @@ export async function simpanRiwayat(jenisMenu: string, dataInput: unknown, dataH
 
 export async function getRiwayat(filterKategori?: string | null, filterBlok?: string | null) {
   const blokKode = filterBlok?.trim().toUpperCase()
-  const riwayats = await prisma.riwayatKalkulasi.findMany({
+  const riwayats = await getDb().riwayatKalkulasi.findMany({
     where: {
       jenisMenu: filterKategori || undefined,
       blok: blokKode ? { kode: { contains: blokKode } } : undefined,
@@ -172,14 +172,14 @@ export async function getRiwayat(filterKategori?: string | null, filterBlok?: st
 }
 
 export async function getDetailBlok(blokId: string) {
-  const blok = await prisma.blok.findUnique({
+  const blok = await getDb().blok.findUnique({
     where: { id: blokId },
     include: { afdeling: { include: { kebun: true } } },
   })
   if (!blok) return null
   const tahun = new Date().getFullYear()
   const status = hitungStatusBlok(blok.tahunTanam, tahun).data!
-  const riwayat = await prisma.riwayatKalkulasi.findMany({
+  const riwayat = await getDb().riwayatKalkulasi.findMany({
     where: { blokId },
     orderBy: { tanggal: "desc" },
     take: 20,
@@ -216,17 +216,17 @@ export async function getDetailBlok(blokId: string) {
 }
 
 export async function getDashboard() {
-  const bloks = await prisma.blok.findMany({ select: { luasHa: true } })
+  const bloks = await getDb().blok.findMany({ select: { luasHa: true } })
   const totalLuas = bloks.reduce((s, b) => s + b.luasHa, 0)
 
   const sekarang = new Date()
   const bulanAwal = new Date(sekarang.getFullYear(), sekarang.getMonth(), 1)
 
-  const panen = await prisma.riwayatKalkulasi.findMany({
+  const panen = await getDb().riwayatKalkulasi.findMany({
     where: { jenisMenu: "pengiriman_tbs", tanggal: { gte: bulanAwal } },
     orderBy: { tanggal: "asc" },
   })
-  const pupuk = await prisma.riwayatKalkulasi.findMany({
+  const pupuk = await getDb().riwayatKalkulasi.findMany({
     where: { jenisMenu: "kebutuhan_pupuk", tanggal: { gte: bulanAwal } },
   })
 
@@ -250,7 +250,7 @@ export async function getDashboard() {
   for (let i = 5; i >= 0; i--) {
     const start = new Date(sekarang.getFullYear(), sekarang.getMonth() - i, 1)
     const end = new Date(sekarang.getFullYear(), sekarang.getMonth() - i + 1, 1)
-    const entries = await prisma.riwayatKalkulasi.findMany({
+    const entries = await getDb().riwayatKalkulasi.findMany({
       where: { jenisMenu: "pengiriman_tbs", tanggal: { gte: start, lt: end } },
     })
     const tonase = entries.reduce((s, e) => s + ((JSON.parse(e.dataInput) as { tonase?: number }).tonase ?? 0), 0)
@@ -273,7 +273,7 @@ export async function getDashboard() {
 
 export async function downloadPDF(entryIds: string[]) {
   if (!entryIds.length) return { error: "Pilih minimal 1 entri" }
-  const rows = await prisma.riwayatKalkulasi.findMany({
+  const rows = await getDb().riwayatKalkulasi.findMany({
     where: { id: { in: entryIds } },
     include: { blok: { select: { kode: true } } },
     orderBy: { tanggal: "desc" },
@@ -287,6 +287,6 @@ export async function downloadPDF(entryIds: string[]) {
     data_hasil: JSON.parse(r.dataHasil) as unknown,
     blok_kode: r.blok?.kode ?? null,
   }))
-  const buffer = await generatePDF(entries)
-  return { buffer: buffer.toString("base64") }
+  const bytes = await generatePDF(entries)
+  return { buffer: Buffer.from(bytes).toString("base64") }
 }

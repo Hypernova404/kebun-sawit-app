@@ -1,9 +1,9 @@
 "use client"
 
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { ArrowUpRight, Banknote, Droplets, Leaf, PiggyBank } from "lucide-react"
 import { getDashboard } from "@/lib/actions"
 import { useEffect, useState } from "react"
+import dynamic from "next/dynamic"
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatusBadge, statusVariantFor } from "@/components/status-badge"
@@ -11,6 +11,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { NAV_GROUPS } from "@/components/layout/nav"
 
 type Dashboard = Awaited<ReturnType<typeof getDashboard>>
+
+const ChartTren = dynamic(() => import("@/components/chart-tren"), { ssr: false })
 
 function Kpi({ label, value, suffix, icon: Icon, tone }: { label: string; value: string; suffix?: string; icon: typeof Leaf; tone?: string }) {
   return (
@@ -76,26 +78,7 @@ export default function DashboardPage() {
             {!data ? (
               <Skeleton className="h-64 rounded-xl" />
             ) : (
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={data.tren_produksi} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="tbs" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#2F5233" stopOpacity={0.25} />
-                        <stop offset="100%" stopColor="#2F5233" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid stroke="#E5E7E2" vertical={false} />
-                    <XAxis dataKey="bulan" tick={{ fontSize: 12, fill: "#6B7280" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 12, fill: "#6B7280" }} axisLine={false} tickLine={false} unit=" t" />
-                    <Tooltip
-                      contentStyle={{ borderRadius: 12, border: "1px solid #E5E7E2", fontSize: 13 }}
-                      formatter={(v) => [`${Number(v ?? 0).toLocaleString("id-ID")} ton`, "TBS"]}
-                    />
-                    <Area type="monotone" dataKey="tonase" stroke="#2F5233" strokeWidth={2} fill="url(#tbs)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+              <ChartTren data={data.tren_produksi} />
             )}
           </CardContent>
         </Card>
