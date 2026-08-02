@@ -13,6 +13,7 @@ export default async function ProfilPage() {
   return (
     <>
       <PageHeader
+        backHref="/saya"
         title="Profil Saya"
         description="Data akun yang terhubung. Informasi diambil langsung dari akun Google-mu."
         category="Akun"

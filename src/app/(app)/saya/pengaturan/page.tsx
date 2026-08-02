@@ -34,6 +34,7 @@ export default function PengaturanPage() {
   return (
     <>
       <PageHeader
+        backHref="/saya"
         title="Pengaturan"
         description="Preferensi standar aplikasi SawitDesk."
         category="Akun"

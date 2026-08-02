@@ -7,6 +7,7 @@ export default function TentangPage() {
   return (
     <>
       <PageHeader
+        backHref="/saya"
         title="Tentang Aplikasi"
         description="Informasi umum SawitDesk."
         category="Akun"

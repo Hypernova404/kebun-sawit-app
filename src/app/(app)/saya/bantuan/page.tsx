@@ -52,6 +52,7 @@ export default function BantuanPage() {
   return (
     <>
       <PageHeader
+        backHref="/saya"
         title="Bantuan & Panduan"
         description="Panduan singkat untuk setiap menu kalkulator SawitDesk."
         category="Akun"
