@@ -12,10 +12,21 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { PageHeader } from "@/components/page-header"
 import { Skeleton } from "@/components/ui/skeleton"
-import { getRiwayat, downloadPDF, hapusRiwayat } from "@/lib/actions"
+import { getRiwayat, downloadPDF, hapusRiwayat, hapusRiwayatBanyak } from "@/lib/actions"
 import { LABEL_MENU } from "@/lib/label-menu"
 import { b64ToBlob, downloadBlob } from "@/lib/client-file"
 import JSZip from "jszip"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 type Entry = {
   id: string
@@ -103,6 +114,20 @@ export default function RiwayatPage() {
     refresh()
   }
 
+  const hapusBanyak = async () => {
+    const ids = selected.size > 0 ? [...selected] : entries!.map((e) => e.id)
+    setBusy(true)
+    const res = await hapusRiwayatBanyak(ids)
+    setBusy(false)
+    if (res && "error" in res && res.error) {
+      alert(res.error)
+      return
+    }
+    refresh()
+  }
+
+  const hapusCount = selected.size > 0 ? selected.size : entries?.length ?? 0
+
   return (
     <>
       <PageHeader
@@ -147,10 +172,46 @@ export default function RiwayatPage() {
 
         <Card className="shadow-sm">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <FileText data-icon />
-              Daftar riwayat
-            </CardTitle>
+            <div className="flex items-center justify-between gap-2">
+              <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                <FileText data-icon />
+                Daftar riwayat
+              </CardTitle>
+              <AlertDialog>
+                <AlertDialogTrigger
+                  disabled={!entries || entries.length === 0 || busy}
+                  aria-label="Hapus riwayat"
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 data-icon className="size-4" />
+                    </Button>
+                  }
+                />
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {selected.size > 0 ? `Hapus ${selected.size} riwayat` : "Hapus semua riwayat"}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {hapusCount} riwayat akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Batal</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={hapusBanyak}
+                      className="bg-destructive text-white hover:bg-destructive/90"
+                    >
+                      Hapus
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           </CardHeader>
           <CardContent>
             {!entries ? (

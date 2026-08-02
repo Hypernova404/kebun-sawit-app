@@ -311,6 +311,16 @@ export async function hapusRiwayat(id: string) {
   return { ok: true }
 }
 
+export async function hapusRiwayatBanyak(ids: string[]) {
+  if (!ids.length) return { error: "Tidak ada riwayat yang dihapus" }
+  const userId = await requireUserId()
+  const result = await getDb().riwayatKalkulasi.deleteMany({
+    where: { id: { in: ids }, userId },
+  })
+  revalidatePath("/")
+  return { ok: true, dihapus: result.count }
+}
+
 export async function downloadPDF(entryIds: string[]) {
   if (!entryIds.length) return { error: "Pilih minimal 1 entri" }
   const userId = await requireUserId()
