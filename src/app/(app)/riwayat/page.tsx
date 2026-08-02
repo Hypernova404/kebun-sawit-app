@@ -163,7 +163,11 @@ export default function RiwayatPage() {
               <Label htmlFor="fb">Filter blok (kode)</Label>
               <Input id="fb" placeholder="mis. A1-01" value={blok} onChange={(e) => setBlok(e.target.value)} />
             </div>
-            <Button onClick={exportPdf} disabled={!entries || busy}>
+            <Button
+              onClick={exportPdf}
+              disabled={!entries || busy}
+              className="whitespace-nowrap min-w-48"
+            >
               <Download data-icon="inline-start" />
               {selected.size > 0
                 ? `Unduh Terpilih (${selected.size})`
