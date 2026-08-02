@@ -45,6 +45,7 @@ export default function RiwayatPage() {
   const [blok, setBlok] = useState("")
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [busy, setBusy] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   const fetchData = useCallback(async (kategoriFilter: string | null, blokFilter: string | null) => {
     return (await getRiwayat(kategoriFilter, blokFilter)) as Entry[]
@@ -115,6 +116,7 @@ export default function RiwayatPage() {
   }
 
   const hapusBanyak = async () => {
+    setConfirmOpen(false)
     const ids = selected.size > 0 ? [...selected] : entries!.map((e) => e.id)
     setBusy(true)
     const res = await hapusRiwayatBanyak(ids)
@@ -177,17 +179,18 @@ export default function RiwayatPage() {
                 <FileText data-icon />
                 Daftar riwayat
               </CardTitle>
-              <AlertDialog>
+              <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
                 <AlertDialogTrigger
                   disabled={!entries || entries.length === 0 || busy}
-                  aria-label="Hapus riwayat"
+                  aria-label={hapusCount > 0 ? `Hapus ${hapusCount} riwayat` : "Hapus riwayat"}
                   render={
                     <Button
-                      variant="ghost"
-                      size="icon"
+                      variant="outline"
+                      size="sm"
                       className="text-muted-foreground hover:text-destructive"
                     >
-                      <Trash2 data-icon className="size-4" />
+                      <Trash2 data-icon="inline-start" className="size-4" />
+                      {selected.size > 0 ? `Hapus ${selected.size} Riwayat` : "Hapus Riwayat"}
                     </Button>
                   }
                 />
