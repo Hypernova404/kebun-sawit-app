@@ -1,5 +1,6 @@
 import {
   ArrowLeftRight,
+  CircleUser,
   FlaskConical,
   History,
   LayoutDashboard,
@@ -67,8 +68,5 @@ export const NAV_GROUPS: NavGroup[] = [
 
 export const BOTTOM_NAV = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/pemupukan", label: "Pupuk", icon: FlaskConical },
-  { href: "/pengiriman", label: "Kirim TBS", icon: Truck },
-  { href: "/blok", label: "Blok", icon: Map },
-  { href: "/riwayat", label: "Riwayat", icon: History },
+  { href: "/saya", label: "Saya", icon: CircleUser },
 ]
