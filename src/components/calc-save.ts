@@ -13,6 +13,10 @@ export async function saveHistory(
   const res = await simpanRiwayat(jenisMenu, dataInput, dataHasil, blokId ?? null)
   if (res.error) {
     toast.error("Gagal menyimpan riwayat", { description: String(res.error.message ?? res.error) })
+  } else if (res.duplikat) {
+    toast.info("Hasil tidak disimpan ulang", {
+      description: "Riwayat dengan input dan blok yang sama sudah ada",
+    })
   } else if (jenisMenu === "pengiriman_tbs" || jenisMenu === "kebutuhan_pupuk") {
     toast.success("Data transaksi tersimpan", { description: blokKode ? `Blok ${blokKode}` : undefined })
   }

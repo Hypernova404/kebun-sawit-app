@@ -161,17 +161,24 @@ export async function simpanRiwayat(jenisMenu: string, dataInput: unknown, dataH
     const blok = await getDb().blok.findFirst({ where: { id: blokId, kebun: { userId } } })
     if (!blok) return { error: { code: "NOT_FOUND", message: "blok_id tidak ditemukan" } }
   }
+  const serializedInput = JSON.stringify(dataInput)
+  const duplikat = await getDb().riwayatKalkulasi.findFirst({
+    where: { userId, jenisMenu, dataInput: serializedInput, blokId: blokId ?? null },
+    select: { id: true },
+    orderBy: { tanggal: "desc" },
+  })
+  if (duplikat) return { id: duplikat.id, duplikat: true }
   const entry = await getDb().riwayatKalkulasi.create({
     data: {
       userId,
       jenisMenu,
-      dataInput: JSON.stringify(dataInput),
+      dataInput: serializedInput,
       dataHasil: JSON.stringify(dataHasil),
       blokId: blokId ?? null,
     },
   })
   revalidatePath("/")
-  return { id: entry.id }
+  return { id: entry.id, duplikat: false }
 }
 
 export async function getRiwayat(filterKategori?: string | null, filterBlok?: string | null) {
