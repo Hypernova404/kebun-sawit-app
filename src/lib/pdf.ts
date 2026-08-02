@@ -101,7 +101,7 @@ export async function generatePDF(entries: RiwayatEntry[]): Promise<Uint8Array> 
   y -= 30
 
   for (const entry of entries) {
-    if (y < MAX_Y + 18) {
+    if (y < MAX_Y) {
       newPage()
     }
     y -= 16
@@ -172,18 +172,22 @@ export async function generatePDF(entries: RiwayatEntry[]): Promise<Uint8Array> 
     objects.push(`<< /Length ${p.length} >>\nstream\n${p}\nendstream`)
   }
 
-  let out = "%PDF-1.4\n"
+  const out: number[] = []
+  const pushStr = (s: string): void => {
+    for (let i = 0; i < s.length; i++) out.push(s.charCodeAt(i) & 0xff)
+  }
   const offsets: number[] = []
+  pushStr("%PDF-1.4\n")
   objects.forEach((obj, i) => {
     offsets.push(out.length)
-    out += `${i + 1} 0 obj\n${obj}\nendobj\n`
+    pushStr(`${i + 1} 0 obj\n${obj}\nendobj\n`)
   })
   const xref = out.length
-  out += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`
+  pushStr(`xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`)
   for (const off of offsets) {
-    out += `${String(off).padStart(10, "0")} 00000 n \n`
+    pushStr(`${String(off).padStart(10, "0")} 00000 n \n`)
   }
-  out += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`
+  pushStr(`trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`)
 
-  return new TextEncoder().encode(out)
+  return new Uint8Array(out)
 }
