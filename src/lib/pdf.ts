@@ -93,7 +93,11 @@ export async function generatePDF(entries: RiwayatEntry[]): Promise<Uint8Array> 
 
   newPage()
 
-  content.push(textOp("F2", 16, M, y, "0.184 0.322 0.2", "Laporan Riwayat Kalkulasi — Kebun Kelapa Sawit"))
+  const menuLabel = entries.length === 1 ? LABEL_MENU[entries[0].jenis_menu] ?? entries[0].jenis_menu : null
+
+  content.push(
+    textOp("F2", 16, M, y, "0.184 0.322 0.2", menuLabel ? `Laporan Kalkulasi — ${menuLabel}` : "Laporan Riwayat Kalkulasi — Kebun Kelapa Sawit"),
+  )
   y -= 22
   content.push(
     textOp("F1", 9, M, y, "0.42 0.447 0.502", `Dibuat: ${new Date().toLocaleString("id-ID")}  |  ${entries.length} entri`),

@@ -320,14 +320,18 @@ export async function downloadPDF(entryIds: string[]) {
     orderBy: { tanggal: "desc" },
   })
   if (!rows.length) return { error: "Entri tidak ditemukan" }
-  const entries = rows.map((r) => ({
-    id: r.id,
-    jenis_menu: r.jenisMenu,
-    tanggal: r.tanggal,
-    data_input: JSON.parse(r.dataInput) as unknown,
-    data_hasil: JSON.parse(r.dataHasil) as unknown,
-    blok_kode: r.blok?.kode ?? null,
-  }))
-  const bytes = await generatePDF(entries)
-  return { buffer: Buffer.from(bytes).toString("base64") }
+  const items = []
+  for (const r of rows) {
+    const entry = {
+      id: r.id,
+      jenis_menu: r.jenisMenu,
+      tanggal: r.tanggal,
+      data_input: JSON.parse(r.dataInput) as unknown,
+      data_hasil: JSON.parse(r.dataHasil) as unknown,
+      blok_kode: r.blok?.kode ?? null,
+    }
+    const bytes = await generatePDF([entry])
+    items.push({ id: r.id, buffer: Buffer.from(bytes).toString("base64") })
+  }
+  return { items }
 }

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { ArrowLeft, Download } from "lucide-react"
-import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -49,11 +48,12 @@ export default function RiwayatDetailPage({ params }: { params: Promise<{ id: st
       alert(res.error)
       return
     }
-    const blob = b64ToBlob(res.buffer as string, "application/pdf")
-    downloadBlob(blob, `riwayat-${entry.jenis_menu}-${new Date(entry.tanggal).toISOString().slice(0, 10)}.pdf`)
+    const item = res.items![0]
+    const blob = b64ToBlob(item.buffer, "application/pdf")
+    downloadBlob(blob, `perhitungan-${item.id}.pdf`)
   }
 
-  const renderValue = (v: unknown, depth = 0): string => {
+  const renderValue = (v: unknown): string => {
     if (v == null) return "—"
     if (typeof v === "number") return v.toLocaleString("id-ID", { maximumFractionDigits: 4 })
     if (typeof v === "boolean") return v ? "Ya" : "Tidak"

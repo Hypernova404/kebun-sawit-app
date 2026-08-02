@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { getRiwayat, downloadPDF, hapusRiwayat } from "@/lib/actions"
 import { LABEL_MENU } from "@/lib/label-menu"
 import { b64ToBlob, downloadBlob } from "@/lib/client-file"
+import JSZip from "jszip"
 
 type Entry = {
   id: string
@@ -34,18 +35,29 @@ export default function RiwayatPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [busy, setBusy] = useState(false)
 
-  const load = useCallback(() => {
-    setEntries(null)
-    const kategoriFilter = kategori && kategori !== "__all__" ? kategori : null
-    getRiwayat(kategoriFilter, blok || null).then((data) => {
-      setEntries(data as Entry[])
-      setSelected(new Set())
-    })
-  }, [kategori, blok])
+  const fetchData = useCallback(async (kategoriFilter: string | null, blokFilter: string | null) => {
+    return (await getRiwayat(kategoriFilter, blokFilter)) as Entry[]
+  }, [])
 
   useEffect(() => {
-    load()
-  }, [load])
+    const kategoriFilter = kategori && kategori !== "__all__" ? kategori : null
+    let cancelled = false
+    fetchData(kategoriFilter, blok || null).then((data) => {
+      if (cancelled) return
+      setEntries(data)
+      setSelected(new Set())
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [fetchData, kategori, blok])
+
+  const refresh = useCallback(async () => {
+    const kategoriFilter = kategori && kategori !== "__all__" ? kategori : null
+    const data = await fetchData(kategoriFilter, blok || null)
+    setEntries(data)
+    setSelected(new Set())
+  }, [fetchData, kategori, blok])
 
   const toggle = (id: string) => {
     setSelected((prev) => {
@@ -65,8 +77,18 @@ export default function RiwayatPage() {
       alert(res.error)
       return
     }
-    const blob = b64ToBlob(res.buffer as string, "application/pdf")
-    downloadBlob(blob, `riwayat-kalkulasi-${new Date().toISOString().slice(0, 10)}.pdf`)
+    const items = res.items!
+    if (items.length === 1) {
+      const blob = b64ToBlob(items[0].buffer, "application/pdf")
+      downloadBlob(blob, `perhitungan-${items[0].id}.pdf`)
+      return
+    }
+    const zip = new JSZip()
+    for (const item of items) {
+      zip.file(`perhitungan-${item.id}.pdf`, b64ToBlob(item.buffer, "application/pdf"))
+    }
+    const blob = await zip.generateAsync({ type: "blob" })
+    downloadBlob(blob, `history-perhitungan-${new Date().toISOString().slice(0, 10)}.zip`)
   }
 
   const hapus = async (id: string) => {
@@ -78,7 +100,7 @@ export default function RiwayatPage() {
       alert(res.error)
       return
     }
-    load()
+    refresh()
   }
 
   return (
@@ -116,7 +138,9 @@ export default function RiwayatPage() {
             </div>
             <Button onClick={exportPdf} disabled={!entries || busy}>
               <Download data-icon="inline-start" />
-              {selected.size > 0 ? `Unduh PDF (${selected.size} entri)` : "Unduh PDF"}
+              {selected.size > 0
+                ? `Unduh Terpilih (${selected.size})`
+                : `Unduh Semua (${entries?.length ?? 0})`}
             </Button>
           </CardContent>
         </Card>
