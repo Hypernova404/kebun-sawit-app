@@ -158,9 +158,9 @@ export async function generatePDF(entries: RiwayatEntry[]): Promise<Uint8Array> 
   const objects: string[] = []
   const pageRefs: number[] = []
   for (let i = 0; i < pages.length; i++) {
-    pageRefs.push(2 + i)
+    pageRefs.push(3 + i)
   }
-  const fontRef = 2 + pages.length
+  const fontRef = 3 + pages.length
   const fontBoldRef = fontRef + 1
   const contentStartRef = fontBoldRef + 1
 

@@ -76,4 +76,35 @@ describe("generatePDF", () => {
     const startxref = Number(text.match(/startxref\n(\d+)/)![1])
     expect(decode(pdf.slice(startxref, startxref + 4))).toBe("xref")
   })
+
+  it("struktur objek valid: Kids tidak self-reference, /Contents menunjuk stream yang benar", async () => {
+    const pdf = await generatePDF(entries)
+    const text = decode(pdf)
+    const objBodies = [...text.matchAll(/(\d+) 0 obj\n([\s\S]*?)\nendobj\n/g)].map((m) => ({
+      n: Number(m[1]),
+      body: m[2],
+    }))
+    const byNum = new Map(objBodies.map((o) => [o.n, o.body]))
+
+    // Kids Pages (objek 2) tidak boleh memuat referensi ke objek 2 (loop)
+    const pagesObj = byNum.get(2)!
+    const kids = pagesObj.match(/\/Kids \[([^\]]*)\]/)![1]
+    expect(kids).not.toContain("2 0 R")
+
+    // setiap halaman: /Parent = 2 0 R, /Contents menunjuk objek stream yang isinya ada
+    for (const o of objBodies) {
+      if (!/\/Type \/Page[^s]/.test(o.body)) continue
+      expect(o.body).toContain("/Parent 2 0 R")
+      const contentRef = o.body.match(/\/Contents (\d+) 0 R/)![1]
+      const streamObj = byNum.get(Number(contentRef))
+      expect(streamObj).toBeDefined()
+      expect(streamObj).toContain("/Length")
+      expect(streamObj).toContain("stream")
+      expect(streamObj).toContain("endstream")
+    }
+
+    // jumlah objek = 4 (Catalog, Pages, 2 font) + 2 × jumlah halaman (page + stream konten)
+    const pageCount = objBodies.filter((o) => /\/Type \/Page[^s]/.test(o.body)).length
+    expect(objBodies.length).toBe(4 + 2 * pageCount)
+  })
 })
