@@ -2,7 +2,7 @@ import { AlertTriangle, CheckCircle2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
-export type Row = { label: string; value: string | number; highlight?: boolean; unit?: string; desc?: string }
+export type Row = { label: string; value: string | number; highlight?: boolean; unit?: string }
 
 export function ResultPanel({
   title,
@@ -38,12 +38,9 @@ export function ResultPanel({
         {!error && rows.length > 0 && (
           <div className="flex flex-col divide-y divide-border">
             {rows.map((r) => (
-              <div key={r.label} className="flex items-center justify-between gap-4 py-2.5">
-                <div className="flex min-w-0 flex-col">
-                  <span className="text-sm text-muted-foreground">{r.label}</span>
-                  {r.desc ? <span className="mt-0.5 text-xs text-muted-foreground/70">{r.desc}</span> : null}
-                </div>
-                <span className={`num shrink-0 text-right text-sm font-semibold ${r.highlight ? "text-primary text-lg" : "text-foreground"}`}>
+              <div key={r.label} className="flex items-baseline justify-between gap-4 py-2">
+                <span className="text-sm text-muted-foreground">{r.label}</span>
+                <span className={`num text-right text-sm font-semibold ${r.highlight ? "text-primary text-lg" : "text-foreground"}`}>
                   {r.value}
                   {r.unit ? <span className="ml-1 text-xs font-normal text-muted-foreground">{r.unit}</span> : null}
                 </span>

@@ -77,43 +77,12 @@ export default function PopulasiPage() {
           rows={
             result
               ? [
-                  {
-                    label: "Pola tanam",
-                    value: POLA_LABEL[result.pola] ?? result.pola,
-                    unit: "",
-                    desc: "Terdeteksi otomatis dari perbandingan jarak antar tanaman dan jarak antar baris: sama → persegi, rasio ±0,866 → segitiga sama sisi, selain itu → persegi panjang.",
-                  },
-                  {
-                    label: "Jarak antar tanaman",
-                    value: result.jarak_tanam.toLocaleString("id-ID"),
-                    unit: "m",
-                    desc: "Jarak antar tanaman dalam satu baris, sesuai input kamu.",
-                  },
-                  {
-                    label: "Jarak antar baris",
-                    value: result.jarak_baris.toLocaleString("id-ID"),
-                    unit: "m",
-                    desc: "Jarak antar baris tanaman di lapangan, sesuai input kamu.",
-                  },
-                  {
-                    label: "Luas per pokok",
-                    value: result.luas_per_pokok.toLocaleString("id-ID"),
-                    unit: "m²",
-                    desc: `Hasil kali jarak antar tanaman × jarak antar baris = ${result.jarak_tanam.toLocaleString("id-ID")} m × ${result.jarak_baris.toLocaleString("id-ID")} m. Luas lahan yang ditempati satu pokok.`,
-                  },
-                  {
-                    label: "Populasi per ha",
-                    value: result.populasi_per_ha.toLocaleString("id-ID"),
-                    unit: "pokok/ha",
-                    desc: `SPH = 10.000 m² ÷ ${result.luas_per_pokok.toLocaleString("id-ID")} m² = ${result.sph_desimal.toLocaleString("id-ID")} pokok/ha, dibulatkan untuk pelaporan.`,
-                  },
-                  {
-                    label: "Jumlah pokok",
-                    value: result.jumlah_pokok.toLocaleString("id-ID"),
-                    unit: "pokok",
-                    highlight: true,
-                    desc: `Populasi desimal (${result.sph_desimal.toLocaleString("id-ID")} pokok/ha) dikali luas lahan, lalu dibulatkan ke bawah (floor) agar tidak melebihi kapasitas lahan.`,
-                  },
+                  { label: "Pola tanam", value: POLA_LABEL[result.pola] ?? result.pola, unit: "" },
+                  { label: "Jarak antar tanaman", value: result.jarak_tanam.toLocaleString("id-ID"), unit: "m" },
+                  { label: "Jarak antar baris", value: result.jarak_baris.toLocaleString("id-ID"), unit: "m" },
+                  { label: "Luas per pokok", value: result.luas_per_pokok.toLocaleString("id-ID"), unit: "m²" },
+                  { label: "Populasi per ha", value: result.populasi_per_ha.toLocaleString("id-ID"), unit: "pokok/ha" },
+                  { label: "Jumlah pokok", value: result.jumlah_pokok.toLocaleString("id-ID"), unit: "pokok", highlight: true },
                 ]
               : []
           }

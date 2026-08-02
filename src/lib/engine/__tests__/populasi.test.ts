@@ -38,7 +38,19 @@ describe("Menu 1 — Populasi", () => {
   it("menggunakan Math.floor untuk jumlah_pokok", () => {
     const r = hitungPopulasi(1, 9.2, 7.97)
     expect(r.data!.populasi_per_ha).toBeCloseTo(136, 0)
-    expect(r.data!.jumlah_pokok).toBe(Math.floor(r.data!.sph_desimal))
+    expect(r.data!.jumlah_pokok).toBe(Math.floor(10000 / (9.2 * 7.97)))
+  })
+
+  it("tanpa double rounding: floor diterapkan di langkah terakhir (sph desimal × luas)", () => {
+    const r = hitungPopulasi(150, 9.2, 7.97)
+    const sph = 10000 / (9.2 * 7.97)
+    expect(r.data!.jumlah_pokok).toBe(Math.floor(sph * 150))
+    expect(r.data!.jumlah_pokok).not.toBe(Math.floor(Math.round(sph)) * 150)
+  })
+
+  it("SPH dibulatkan round (bukan floor) untuk pelaporan", () => {
+    const r = hitungPopulasi(1, 9, 7.79)
+    expect(r.data!.populasi_per_ha).toBe(Math.round(10000 / (9 * 7.79)))
   })
 
   it("warning bila salah satu jarak di luar 7-10m, tetap hitung", () => {
