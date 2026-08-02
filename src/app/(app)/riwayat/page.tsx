@@ -58,7 +58,7 @@ export default function RiwayatPage() {
 
   const exportPdf = async () => {
     setBusy(true)
-    const ids = selected.size > 0 ? [...selected] : entries!.slice(0, 20).map((e) => e.id)
+    const ids = selected.size > 0 ? [...selected] : entries!.map((e) => e.id)
     const res = await downloadPDF(ids)
     setBusy(false)
     if ("error" in res && res.error) {
@@ -116,7 +116,7 @@ export default function RiwayatPage() {
             </div>
             <Button onClick={exportPdf} disabled={!entries || busy}>
               <Download data-icon="inline-start" />
-              {selected.size > 0 ? `Unduh PDF (${selected.size} entri)` : "Unduh PDF (20 terbaru)"}
+              {selected.size > 0 ? `Unduh PDF (${selected.size} entri)` : "Unduh PDF"}
             </Button>
           </CardContent>
         </Card>
