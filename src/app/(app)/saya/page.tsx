@@ -24,7 +24,6 @@ export default async function SayaPage() {
   return (
     <>
       <PageHeader
-        backHref="/"
         title="Menu Saya"
         description="Profil akun, data kebun, dan pengaturan pribadi kamu."
         category="Akun"
