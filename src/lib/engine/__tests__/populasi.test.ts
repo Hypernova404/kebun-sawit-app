@@ -4,49 +4,67 @@ import {
   hitungKebutuhanBibit,
   hitungDesainBlok,
   hitungStatusBlok,
+  tentukanPola,
 } from "../populasi"
 
 describe("Menu 1 — Populasi", () => {
-  it("9m segitiga sama sisi → jarak baris 7.79m, populasi ~143 pokok/ha", () => {
-    const r = hitungPopulasi(1, 9, "segitiga_sama_sisi")
+  it("9m & 7.79m (segitiga sama sisi) → pola terdeteksi, populasi ~143 pokok/ha", () => {
+    const r = hitungPopulasi(1, 9, 7.79)
     expect(r.success).toBe(true)
     const d = r.data!
-    expect(d.jarak_baris).toBeCloseTo(7.79, 1)
+    expect(d.pola).toBe("segitiga_sama_sisi")
+    expect(d.jarak_baris).toBe(7.79)
     expect(d.populasi_per_ha).toBeCloseTo(143, 0)
   })
 
-  it("mata_lima identik dengan segitiga sama sisi", () => {
-    const a = hitungPopulasi(1, 9, "mata_lima").data!
-    const b = hitungPopulasi(1, 9, "segitiga_sama_sisi").data!
-    expect(a.jumlah_pokok).toBe(b.jumlah_pokok)
-    expect(a.populasi_per_ha).toBe(b.populasi_per_ha)
+  it("9m & 9m (persegi) → pola persegi, populasi ~123 pokok/ha", () => {
+    const r = hitungPopulasi(1, 9, 9)
+    expect(r.data!.pola).toBe("persegi")
+    expect(r.data!.populasi_per_ha).toBe(123)
+    expect(r.data!.jarak_baris).toBe(9)
   })
 
-  it("8m persegi → populasi ~156 pokok/ha", () => {
-    const r = hitungPopulasi(1, 8, "persegi")
-    expect(r.data!.populasi_per_ha).toBeCloseTo(156, 0)
+  it("8m & 8m persegi → populasi ~156 pokok/ha", () => {
+    const r = hitungPopulasi(1, 8, 8)
+    expect(r.data!.populasi_per_ha).toBe(156)
     expect(r.data!.jarak_baris).toBe(8)
   })
 
-  it("menggunakan Math.floor untuk jumlah_pokok", () => {
-    const r = hitungPopulasi(1, 9.2, "segitiga_sama_sisi")
-    expect(r.data!.populasi_per_ha).toBeCloseTo(136, 0)
-    expect(r.data!.jumlah_pokok).toBe(Math.floor(10000 / r.data!.luas_per_pokok))
+  it("jarak tidak sama & bukan segitiga → persegi panjang", () => {
+    const r = hitungPopulasi(1, 9, 7)
+    expect(r.data!.pola).toBe("persegi_panjang")
   })
 
-  it("warning bila jarak tanam di luar 7-10m, tetap hitung", () => {
-    const r = hitungPopulasi(1, 5, "persegi")
+  it("menggunakan Math.floor untuk jumlah_pokok", () => {
+    const r = hitungPopulasi(1, 9.2, 7.97)
+    expect(r.data!.populasi_per_ha).toBeCloseTo(136, 0)
+    expect(r.data!.jumlah_pokok).toBe(Math.floor(r.data!.sph_desimal))
+  })
+
+  it("warning bila salah satu jarak di luar 7-10m, tetap hitung", () => {
+    const r = hitungPopulasi(1, 5, 8)
     expect(r.success).toBe(true)
     expect(r.data!.warning).toContain("di luar rentang umum")
   })
 
-  it("validasi: luas <= 0 ditolak", () => {
-    expect(hitungPopulasi(0, 9, "persegi").success).toBe(false)
-    expect(hitungPopulasi(-1, 9, "persegi").error?.code).toBe("INVALID_INPUT")
+  it("validasi: luas / jarak <= 0 ditolak", () => {
+    expect(hitungPopulasi(0, 9, 8).success).toBe(false)
+    expect(hitungPopulasi(-1, 9, 8).error?.code).toBe("INVALID_INPUT")
+    expect(hitungPopulasi(1, 0, 8).error?.code).toBe("INVALID_INPUT")
+    expect(hitungPopulasi(1, 9, -2).error?.code).toBe("INVALID_INPUT")
   })
+})
 
-  it("pola tidak dikenal ditolak", () => {
-    expect(hitungPopulasi(1, 9, "hexagonal").error?.code).toBe("INVALID_INPUT")
+describe("tentukanPola", () => {
+  it("a == b → persegi", () => {
+    expect(tentukanPola(9, 9)).toBe("persegi")
+  })
+  it("b ≈ a×0.866 → segitiga sama sisi", () => {
+    expect(tentukanPola(9, 7.79)).toBe("segitiga_sama_sisi")
+    expect(tentukanPola(7.79, 9)).toBe("segitiga_sama_sisi")
+  })
+  it("lainnya → persegi panjang", () => {
+    expect(tentukanPola(9, 7)).toBe("persegi_panjang")
   })
 })
 

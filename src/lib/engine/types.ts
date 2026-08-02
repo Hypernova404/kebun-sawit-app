@@ -17,8 +17,9 @@ export type PopulasiResult = {
   jarak_tanam: number
   jarak_baris: number
   luas_per_pokok: number
-  jumlah_pokok: number
+  sph_desimal: number
   populasi_per_ha: number
+  jumlah_pokok: number
   warning: string | null
 }
 

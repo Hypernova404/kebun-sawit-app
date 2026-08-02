@@ -1,44 +1,37 @@
 import { ok, fail, type BibitResult, type DesainBlokResult, type EngineResult, type PopulasiResult, type StatusBlok } from "./types"
 
-export const POLA_MAP: Record<string, "triangular" | "square"> = {
-  segitiga_sama_sisi: "triangular",
-  mata_lima: "triangular",
-  persegi: "square",
+export const SIN_60 = Math.sin(Math.PI / 3)
+
+export function tentukanPola(jarak_tanam: number, jarak_baris: number): string {
+  if (Math.abs(jarak_tanam - jarak_baris) < 0.01) return "persegi"
+  const ratio = Math.min(jarak_tanam, jarak_baris) / Math.max(jarak_tanam, jarak_baris)
+  if (Math.abs(ratio - SIN_60) < 0.03) return "segitiga_sama_sisi"
+  return "persegi_panjang"
 }
 
-const SIN_60 = Math.sin(Math.PI / 3)
-
-export function hitungPopulasi(luas_ha: number, jarak_tanam: number, pola: string): EngineResult<PopulasiResult> {
-  if (luas_ha <= 0 || jarak_tanam <= 0) {
-    return fail("INVALID_INPUT", "luas_ha dan jarak_tanam harus > 0")
-  }
-  const tipe = POLA_MAP[pola]
-  if (!tipe) {
-    return fail("INVALID_INPUT", "pola tidak dikenali")
+export function hitungPopulasi(luas_ha: number, jarak_tanam: number, jarak_baris: number): EngineResult<PopulasiResult> {
+  if (luas_ha <= 0 || jarak_tanam <= 0 || jarak_baris <= 0) {
+    return fail("INVALID_INPUT", "luas lahan, jarak tanam, dan jarak baris harus > 0")
   }
 
-  let jarak_baris: number
-  let luas_per_pokok: number
-  if (tipe === "triangular") {
-    jarak_baris = jarak_tanam * SIN_60
-    luas_per_pokok = jarak_tanam ** 2 * SIN_60
-  } else {
-    jarak_baris = jarak_tanam
-    luas_per_pokok = jarak_tanam ** 2
-  }
+  const luas_per_pokok = jarak_tanam * jarak_baris
+  const sph = 10000 / luas_per_pokok
+  const sph_bulat = Math.round(sph)
+  const jumlah_pokok = Math.floor(sph * luas_ha)
 
-  const jumlah_pokok = Math.floor((luas_ha * 10000) / luas_per_pokok)
-  const populasi_per_ha = Math.round((10000 / luas_per_pokok) * 10) / 10
-  const warning = jarak_tanam < 7 || jarak_tanam > 10 ? "Jarak tanam di luar rentang umum industri (7-10m)" : null
+  const warnings: string[] = []
+  if (jarak_tanam < 7 || jarak_tanam > 10) warnings.push(`Jarak tanam ${jarak_tanam} m di luar rentang umum 7-10 m`)
+  if (jarak_baris < 7 || jarak_baris > 10) warnings.push(`Jarak baris ${jarak_baris} m di luar rentang umum 7-10 m`)
 
   return ok({
-    pola,
+    pola: tentukanPola(jarak_tanam, jarak_baris),
     jarak_tanam,
-    jarak_baris: Math.round(jarak_baris * 100) / 100,
+    jarak_baris,
     luas_per_pokok: Math.round(luas_per_pokok * 100) / 100,
+    sph_desimal: Math.round(sph * 100) / 100,
+    populasi_per_ha: sph_bulat,
     jumlah_pokok,
-    populasi_per_ha,
-    warning,
+    warning: warnings.length ? warnings.join(". ") + "." : null,
   })
 }
 
