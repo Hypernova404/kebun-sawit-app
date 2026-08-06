@@ -46,7 +46,7 @@ export function estimasiProduksi(umur_tahun: number, luas_ha: number, faktor_kel
   const [low, high] = lookupKurvaProduksi(umur_tahun)
   const base = Math.round(((low + high) / 2) * 100) / 100
   const total_ton = Math.round(base * faktor_kelas_lahan * luas_ha * 100) / 100
-  const warning = umur_tahun > 25 ? "Umur > 25 tahun, produktivitas menurun — pertimbangkan replanting" : null
+  const warning = umur_tahun > 25 ? "Umur > 25 tahun, produktivitas menurun - pertimbangkan replanting" : null
   return ok({
     ton_per_ha: base,
     ton_per_ha_min: low,

@@ -11,7 +11,7 @@ import {
 import { hitungKebutuhanPupukBlok } from "../kebutuhan-pupuk"
 import { HARGA_PUPUK_KALIMANTAN } from "../harga"
 
-describe("Menu 4a — Dosis TBM", () => {
+describe("Menu 4a - Dosis TBM", () => {
   it("bulan 1 Urea = 200 g", () => {
     expect(getDosisTBM(1, "Urea").data!.dosis).toBe(200)
   })
@@ -31,7 +31,7 @@ describe("Menu 4a — Dosis TBM", () => {
   })
 })
 
-describe("Menu 4b — Dosis TM", () => {
+describe("Menu 4b - Dosis TM", () => {
   it("umur 5, Urea → 2.0 kg (kelompok 3-8)", () => {
     expect(getDosisTM(5, "Urea").data!.dosis).toBe(2.0)
   })
@@ -53,7 +53,7 @@ describe("Menu 4b — Dosis TM", () => {
   })
 })
 
-describe("Menu 4c — Jadwal & validasi", () => {
+describe("Menu 4c - Jadwal & validasi", () => {
   it("wilayah Kalimantan Barat terkonfigurasi", () => {
     const r = jadwalSemester("Kalimantan Barat")
     expect(r.success).toBe(true)

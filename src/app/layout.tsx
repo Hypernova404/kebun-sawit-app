@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "SawitDesk — Manajemen Kebun Kelapa Sawit",
+  title: "SawitDesk - Manajemen Kebun Kelapa Sawit",
   description: "Kalkulator agronomi & manajemen kebun kelapa sawit: populasi, pemupukan, produksi, ekonomi, dan laporan.",
 };
 

@@ -6,7 +6,7 @@ export function hitungBEP(biaya_tetap: number, harga_jual_per_unit: number, biay
   }
   const margin = harga_jual_per_unit - biaya_variabel_per_unit
   if (margin <= 0) {
-    return fail("DIVISION_BY_ZERO", "Harga jual harus lebih besar dari biaya variabel — margin tidak boleh 0 atau negatif")
+    return fail("DIVISION_BY_ZERO", "Harga jual harus lebih besar dari biaya variabel - margin tidak boleh 0 atau negatif")
   }
   return ok(Math.round((biaya_tetap / margin) * 100) / 100)
 }

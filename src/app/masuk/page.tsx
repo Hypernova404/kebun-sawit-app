@@ -12,14 +12,14 @@ export default async function MasukPage() {
         <div className="flex flex-col gap-1.5">
           <h1 className="text-2xl font-bold tracking-tight">SawitDesk</h1>
           <p className="text-sm text-muted-foreground">
-            Manajemen kebun kelapa sawit — masuk untuk mulai mencatat data kebunmu.
+            Manajemen kebun kelapa sawit - masuk untuk mulai mencatat data kebunmu.
           </p>
         </div>
         <div className="mt-8">
           <GoogleButton />
         </div>
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          Data tersimpan aman per akun — setiap pengguna punya kebun sendiri.
+          Data tersimpan aman per akun - setiap pengguna punya kebun sendiri.
         </p>
         <p className="mt-4 text-center text-xs font-medium text-muted-foreground/80">
           Project by Kelompok 4

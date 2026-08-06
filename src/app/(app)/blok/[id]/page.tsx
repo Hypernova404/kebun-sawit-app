@@ -29,7 +29,7 @@ export default async function DetailBlokPage({ params }: { params: Promise<{ id:
           <StatusBadge status={detail.status.status} variant={statusVariantFor(detail.status.status)} />
         </div>
         <p className="text-sm text-muted-foreground">
-          {info.kebun} / Afdeling {info.afdeling} — umur {detail.status.umur} tahun
+          {info.kebun} / Afdeling {info.afdeling} - umur {detail.status.umur} tahun
         </p>
       </div>
 
@@ -56,7 +56,7 @@ export default async function DetailBlokPage({ params }: { params: Promise<{ id:
           <CardContent className="pt-5">
             <p className="text-xs text-muted-foreground">Varietas / lahan</p>
             <p className="mt-1 text-xl font-semibold">
-              {info.varietas ?? "—"} <span className="text-sm font-normal text-muted-foreground">/ {info.jenis_lahan}</span>
+              {info.varietas ?? "-"} <span className="text-sm font-normal text-muted-foreground">/ {info.jenis_lahan}</span>
             </p>
           </CardContent>
         </Card>

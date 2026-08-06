@@ -54,7 +54,7 @@ export function hitungKebutuhanPemanen(params: HitungPemanenParams): EngineResul
 
   const warning =
     params.umur_tahun != null && params.umur_tahun > FAKTOR_UMUR_POHON.ambang_tahun
-      ? `Pohon di atas ${FAKTOR_UMUR_POHON.ambang_tahun} tahun cenderung lebih tinggi — kapasitas dipangkas ${(1 - FAKTOR_UMUR_POHON.faktor) * 100}%`
+      ? `Pohon di atas ${FAKTOR_UMUR_POHON.ambang_tahun} tahun cenderung lebih tinggi - kapasitas dipangkas ${(1 - FAKTOR_UMUR_POHON.faktor) * 100}%`
       : null
 
   return ok({

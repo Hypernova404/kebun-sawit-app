@@ -102,7 +102,7 @@ export default function PengirimanPage() {
           <CardHeader>
             <CardTitle className="text-lg font-semibold">Input pengiriman</CardTitle>
             <CardDescription>
-              Setiap kiriman dicatat sebagai 1 baris riwayat baru. Potongan default: mentah {POTONGAN_SORTASI_DEFAULT.mentah_persen}%, mengkal {POTONGAN_SORTASI_DEFAULT.mengkal_persen}%, busuk {POTONGAN_SORTASI_DEFAULT.busuk_persen}% — isi sesuai hasil sortasi di pabrik.
+              Setiap kiriman dicatat sebagai 1 baris riwayat baru. Potongan default: mentah {POTONGAN_SORTASI_DEFAULT.mentah_persen}%, mengkal {POTONGAN_SORTASI_DEFAULT.mengkal_persen}%, busuk {POTONGAN_SORTASI_DEFAULT.busuk_persen}% - isi sesuai hasil sortasi di pabrik.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
@@ -128,7 +128,7 @@ export default function PengirimanPage() {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Konfirmasi pencatatan</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Kirim {parseNum(tonase)} ton TBS — potongan sortasi Rp {result.potongan_rp.toLocaleString("id-ID")} ({result.potongan_persen.toLocaleString("id-ID")}%), bersih Rp {result.pendapatan.toLocaleString("id-ID")}? Ini transaksi riil dan tidak bisa diulang — pastikan data sesuai SPB.
+                      Kirim {parseNum(tonase)} ton TBS - potongan sortasi Rp {result.potongan_rp.toLocaleString("id-ID")} ({result.potongan_persen.toLocaleString("id-ID")}%), bersih Rp {result.pendapatan.toLocaleString("id-ID")}? Ini transaksi riil dan tidak bisa diulang - pastikan data sesuai SPB.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>

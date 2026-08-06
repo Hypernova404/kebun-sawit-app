@@ -38,7 +38,7 @@ export default function PemanenPage() {
     }
     const r = estimasiProduksi(10, l)
     if (t > (r.data?.ton_per_ha ?? 100) * 2) {
-      setWarning("Produksi per ha jauh di atas kurva standar — periksa kembali input")
+      setWarning("Produksi per ha jauh di atas kurva standar - periksa kembali input")
     } else {
       setWarning(null)
     }
@@ -79,7 +79,7 @@ export default function PemanenPage() {
     <>
       <PageHeader
         title="Rotasi Panen & Kebutuhan Pemanen"
-        description="Perencanaan tenaga kerja panen: buah matang harus dipanen tepat rotasi — telat menurunkan rendemen, buru-buru menghasilkan buah mentah yang kena denda PKS."
+        description="Perencanaan tenaga kerja panen: buah matang harus dipanen tepat rotasi - telat menurunkan rendemen, buru-buru menghasilkan buah mentah yang kena denda PKS."
         category="Manajemen Kebun"
       />
       <div className="grid gap-6 px-6 py-6 lg:px-10 xl:grid-cols-2">

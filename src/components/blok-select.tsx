@@ -33,7 +33,7 @@ export function BlokSelect({
       <Label htmlFor="blok">Blok (opsional)</Label>
       <Select value={value} onValueChange={(v) => onChange(v ?? "")}>
         <SelectTrigger id="blok" className="w-full">
-          <SelectValue placeholder="Pilih blok — hasil menempel ke blok ini" />
+          <SelectValue placeholder="Pilih blok - hasil menempel ke blok ini" />
         </SelectTrigger>
         <SelectContent className="max-h-80">
           {allowNone && (
@@ -48,7 +48,7 @@ export function BlokSelect({
                   </SelectLabel>
                   {a.bloks.map((b) => (
                     <SelectItem key={b.id} value={b.id}>
-                      {b.kode} — {b.status}, {b.luasHa} ha
+                      {b.kode} - {b.status}, {b.luasHa} ha
                     </SelectItem>
                   ))}
                 </SelectGroup>

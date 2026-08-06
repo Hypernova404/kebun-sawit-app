@@ -229,7 +229,7 @@ export default function RiwayatPage() {
               </div>
             ) : entries.length === 0 ? (
               <p className="py-8 text-center text-sm text-muted-foreground">
-                Belum ada riwayat. Jalankan kalkulator mana pun — hasilnya otomatis tersimpan di sini.
+                Belum ada riwayat. Jalankan kalkulator mana pun - hasilnya otomatis tersimpan di sini.
               </p>
             ) : (
               <Table>
@@ -257,7 +257,7 @@ export default function RiwayatPage() {
                       <TableCell>
                         <Badge variant="secondary">{LABEL_MENU[e.jenis_menu] ?? e.jenis_menu}</Badge>
                       </TableCell>
-                      <TableCell>{e.blok_kode ?? "—"}</TableCell>
+                      <TableCell>{e.blok_kode ?? "-"}</TableCell>
                       <TableCell>{new Date(e.tanggal).toLocaleString("id-ID")}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-3">

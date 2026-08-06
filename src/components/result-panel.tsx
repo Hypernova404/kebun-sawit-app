@@ -51,7 +51,7 @@ export function ResultPanel({
         {!error && rows.length === 0 && (
           <div className="flex items-center gap-2 py-4 text-sm text-success">
             <CheckCircle2 data-icon />
-            Selesai — tekan tombol Hitung untuk melihat hasil.
+            Selesai - tekan tombol Hitung untuk melihat hasil.
           </div>
         )}
       </CardContent>

@@ -69,7 +69,7 @@ export function getDosisTM(
     return ok({
       dosis: null,
       source: "DEFAULT_TABLE",
-      warning: "Umur > 25 tahun, pertimbangkan replanting — dosis mengikuti rekomendasi LSU terakhir",
+      warning: "Umur > 25 tahun, pertimbangkan replanting - dosis mengikuti rekomendasi LSU terakhir",
     })
   }
   const dosis = TABEL_TM[jenis_pupuk]?.[kelompok]
@@ -104,13 +104,13 @@ export function hitungHariKering(records: RainRecord[]): number {
 export function validasiWaktuAplikasi(jenis_pupuk: string, curah_hujan_7hari_terakhir: RainRecord[], curah_hujan_kemarin: number): EngineResult<string> {
   const hari_tanpa_hujan = hitungHariKering(curah_hujan_7hari_terakhir)
   if (jenis_pupuk === "Urea" && hari_tanpa_hujan >= 3) {
-    return ok("TUNDA — resiko penguapan N, tunggu hujan")
+    return ok("TUNDA - resiko penguapan N, tunggu hujan")
   }
   if (hari_tanpa_hujan >= 7) {
-    return ok("TUNDA — tanah terlalu kering")
+    return ok("TUNDA - tanah terlalu kering")
   }
   if (curah_hujan_kemarin > 60) {
-    return ok("TUNDA 1 HARI — tanah jenuh air")
+    return ok("TUNDA 1 HARI - tanah jenuh air")
   }
   return ok("APLIKASI OK")
 }
@@ -120,7 +120,7 @@ export function cekJarakAntagonis(pupuk_a: string, pupuk_b: string, jarak_hari_r
     ([a, b]) => (pupuk_a === a && pupuk_b === b) || (pupuk_a === b && pupuk_b === a)
   )
   if (isPasanganAntagonis && jarak_hari_rencana < 3) {
-    return ok("WARNING — jarak aplikasi kurang dari 3 hari, pisahkan jadwal")
+    return ok("WARNING - jarak aplikasi kurang dari 3 hari, pisahkan jadwal")
   }
   return ok("OK")
 }

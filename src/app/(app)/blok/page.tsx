@@ -263,7 +263,7 @@ export default function BlokPage() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg font-semibold">{k.nama}</CardTitle>
                 <CardDescription>
-                  {k.lokasi ?? "—"} · Wilayah pemupukan: {k.wilayah}
+                  {k.lokasi ?? "-"} · Wilayah pemupukan: {k.wilayah}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-6">
@@ -300,7 +300,7 @@ export default function BlokPage() {
                             </TableCell>
                             <TableCell className="num text-right">{b.luasHa}</TableCell>
                             <TableCell className="num text-right">{b.jumlahPokok.toLocaleString("id-ID")}</TableCell>
-                            <TableCell>{b.varietas ?? "—"}</TableCell>
+                            <TableCell>{b.varietas ?? "-"}</TableCell>
                             <TableCell>{b.jenisLahan}</TableCell>
                             <TableCell>
                               <StatusBadge status={b.status} variant={statusVariantFor(b.status)} />

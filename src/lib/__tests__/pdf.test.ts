@@ -49,8 +49,7 @@ describe("generatePDF", () => {
   it("stream konten punya karakter non-ASCII WinAnsi tanpa merusak offset", async () => {
     const pdf = await generatePDF(entries)
     const text = decode(pdf)
-    // em-dash (—) dan titik tengah (·) dijudul/Blok jadi byte WinAnsi tunggal
-    expect(text.includes("\x97")).toBe(true) // —
+    // titik tengah (·) di judul/Blok jadi byte WinAnsi tunggal (0xB7)
     expect(text.includes("\xb7")).toBe(true) // ·
     // konten stream hanya berisi byte ASCII + WinAnsi (0x80-0xBF); tidak boleh ada byte ≥ 0xC0 (penanda UTF-8 multibyte)
     const streamMatch = text.match(/stream\n([\s\S]*?)\nendstream/)

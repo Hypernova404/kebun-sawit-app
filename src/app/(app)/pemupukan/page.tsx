@@ -210,7 +210,7 @@ export default function PemupukanPage() {
                 )}
                 {jadwal && (
                   <p className="mt-3 text-xs text-muted-foreground">
-                    Semester I: {jadwal[0]?.jadwal_semester.semester_1.bulan} · Semester II: {jadwal[0]?.jadwal_semester.semester_2.bulan} · Hindari: {jadwal[0]?.jadwal_semester.bulan_dihindari.join(", ") || "—"}
+                    Semester I: {jadwal[0]?.jadwal_semester.semester_1.bulan} · Semester II: {jadwal[0]?.jadwal_semester.semester_2.bulan} · Hindari: {jadwal[0]?.jadwal_semester.bulan_dihindari.join(", ") || "-"}
                   </p>
                 )}
               </CardContent>
@@ -280,7 +280,7 @@ export default function PemupukanPage() {
               rows={
                 lookupResult
                   ? [
-                      { label: "Dosis", value: lookupResult.dosis == null ? "—" : lookupResult.dosis.toLocaleString("id-ID"), unit: mode === "TBM" ? "g/pokok" : "kg/pokok", highlight: true },
+                      { label: "Dosis", value: lookupResult.dosis == null ? "-" : lookupResult.dosis.toLocaleString("id-ID"), unit: mode === "TBM" ? "g/pokok" : "kg/pokok", highlight: true },
                       { label: "Sumber", value: lookupResult.source === "LSU_OVERRIDE" ? "Rekomendasi LSU" : lookupResult.source === "DEFAULT_TABLE" ? "Tabel default" : "Tabel TBM" },
                     ]
                   : []

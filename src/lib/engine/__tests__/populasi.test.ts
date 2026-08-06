@@ -7,7 +7,7 @@ import {
   tentukanPola,
 } from "../populasi"
 
-describe("Menu 1 — Populasi", () => {
+describe("Menu 1 - Populasi", () => {
   it("9m & 7.79m (segitiga sama sisi) → pola terdeteksi, populasi ~143 pokok/ha", () => {
     const r = hitungPopulasi(1, 9, 7.79)
     expect(r.success).toBe(true)
@@ -80,7 +80,7 @@ describe("tentukanPola", () => {
   })
 })
 
-describe("Menu 2 — Kebutuhan Bibit", () => {
+describe("Menu 2 - Kebutuhan Bibit", () => {
   it("7% sulaman → ceil", () => {
     const r = hitungKebutuhanBibit(1000, 0.07)
     expect(r.data!.total_bibit).toBe(1070)
@@ -97,7 +97,7 @@ describe("Menu 2 — Kebutuhan Bibit", () => {
   })
 })
 
-describe("Menu 3 — Desain Blok", () => {
+describe("Menu 3 - Desain Blok", () => {
   it("rasio 90% → SESUAI STANDAR", () => {
     const r = hitungDesainBlok(30, 2, 1)
     expect(r.data!.luas_efektif).toBe(27)

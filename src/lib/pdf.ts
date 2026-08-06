@@ -96,7 +96,7 @@ export async function generatePDF(entries: RiwayatEntry[]): Promise<Uint8Array> 
   const menuLabel = entries.length === 1 ? LABEL_MENU[entries[0].jenis_menu] ?? entries[0].jenis_menu : null
 
   content.push(
-    textOp("F2", 16, M, y, "0.184 0.322 0.2", menuLabel ? `Laporan Kalkulasi — ${menuLabel}` : "Laporan Riwayat Kalkulasi — Kebun Kelapa Sawit"),
+    textOp("F2", 16, M, y, "0.184 0.322 0.2", menuLabel ? `Laporan Kalkulasi - ${menuLabel}` : "Laporan Riwayat Kalkulasi - Kebun Kelapa Sawit"),
   )
   y -= 22
   content.push(
@@ -131,7 +131,7 @@ export async function generatePDF(entries: RiwayatEntry[]): Promise<Uint8Array> 
       if (v == null) return "-"
       if (typeof v === "number") return v.toLocaleString("id-ID", { maximumFractionDigits: 2 })
       if (typeof v === "boolean") return v ? "Ya" : "Tidak"
-      if (Array.isArray(v)) return v.length > 0 ? `Tabel (${v.length} baris)` : "—"
+      if (Array.isArray(v)) return v.length > 0 ? `Tabel (${v.length} baris)` : "-"
       return String(v)
     }
     for (const [k, v] of Object.entries(input)) {

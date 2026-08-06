@@ -154,7 +154,7 @@ export default function KebutuhanPupukPage() {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Simpan kebutuhan pupuk blok ini?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Ini adalah pencatatan transaksi pengadaan — setiap simpan membuat 1 baris riwayat baru. Total: {totalKg.toLocaleString("id-ID")} kg, {totalSak} sak, Rp {totalBiaya.toLocaleString("id-ID")}.
+                      Ini adalah pencatatan transaksi pengadaan - setiap simpan membuat 1 baris riwayat baru. Total: {totalKg.toLocaleString("id-ID")} kg, {totalSak} sak, Rp {totalBiaya.toLocaleString("id-ID")}.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>

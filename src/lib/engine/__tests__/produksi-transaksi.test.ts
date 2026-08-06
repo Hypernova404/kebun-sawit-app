@@ -4,7 +4,7 @@ import { hitungBEP, hitungLabaRugi, hitungPendapatanPengiriman, hitungPendapatan
 import { hitungKebutuhanPemanen } from "../manajemen"
 import { konversi } from "../konversi"
 
-describe("Menu 6 — Estimasi Produksi", () => {
+describe("Menu 6 - Estimasi Produksi", () => {
   it("umur 2 → 0 ton (TBM)", () => {
     const r = estimasiProduksi(2, 30)
     expect(r.data!.total_ton).toBe(0)
@@ -37,7 +37,7 @@ describe("Menu 6 — Estimasi Produksi", () => {
   })
 })
 
-describe("Menu 6b — Faktor musiman produksi", () => {
+describe("Menu 6b - Faktor musiman produksi", () => {
   it("Januari (0.80) dan September (1.22) menaikkan/menurunkan proyeksi bulanan", () => {
     const jan = estimasiProduksiBulanan(10, 30, 1)
     const sep = estimasiProduksiBulanan(10, 30, 9)
@@ -51,7 +51,7 @@ describe("Menu 6b — Faktor musiman produksi", () => {
   })
 })
 
-describe("Menu 7 — Rendemen", () => {
+describe("Menu 7 - Rendemen", () => {
   it("Tenera matang 25 ton → CPO 22%, kernel 5%", () => {
     const r = hitungRendemen(25, "Tenera", "matang")
     expect(r.data!.cpo_ton).toBeCloseTo(5.5, 1)
@@ -70,7 +70,7 @@ describe("Menu 7 — Rendemen", () => {
   })
 })
 
-describe("Menu 8 — Pengiriman TBS", () => {
+describe("Menu 8 - Pengiriman TBS", () => {
   it("25 ton × Rp 3.726/kg → Rp 93.150.000", () => {
     const r = hitungPendapatanPengiriman(25, 3726)
     expect(r.data).toBe(93150000)
@@ -109,7 +109,7 @@ describe("Menu 8 — Pengiriman TBS", () => {
   })
 })
 
-describe("Menu 9 — BEP", () => {
+describe("Menu 9 - BEP", () => {
   it("margin positif → BEP = biaya tetap / margin", () => {
     const r = hitungBEP(500000000, 3726, 2000)
     expect(r.data).toBe(Math.round(500000000 / 1726 * 100) / 100)
@@ -128,7 +128,7 @@ describe("Menu 9 — BEP", () => {
   })
 })
 
-describe("Menu 11 — Kebutuhan Pemanen", () => {
+describe("Menu 11 - Kebutuhan Pemanen", () => {
   it("600 ha × 23 t/ha, rotasi 7, kapasitas 800 → ceil", () => {
     const totalKg = 600 * 23 * 1000
     const r = hitungKebutuhanPemanen({ total_kg_siap_panen: totalKg, rotasi_hari: 7, kapasitas_per_orang_per_hari: 800 })
@@ -158,7 +158,7 @@ describe("Menu 11 — Kebutuhan Pemanen", () => {
   })
 })
 
-describe("Menu 12 — Konversi", () => {
+describe("Menu 12 - Konversi", () => {
   it("30 ha → m2", () => {
     expect(konversi(30, "ha", "m2").data!.nilai).toBe(300000)
   })

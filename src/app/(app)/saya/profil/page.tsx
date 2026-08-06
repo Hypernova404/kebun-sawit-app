@@ -36,7 +36,7 @@ export default async function ProfilPage() {
               </p>
               <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <Mail data-icon className="size-4" />
-                {user.email ?? "—"}
+                {user.email ?? "-"}
               </p>
               <span className="mt-1 flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
                 <BadgeCheck data-icon className="size-3.5 text-primary" />

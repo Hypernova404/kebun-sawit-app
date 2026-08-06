@@ -45,7 +45,7 @@ export default function DashboardPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Dashboard Ringkasan</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Agregasi real-time dari seluruh data yang sudah tercatat — laporan manajemen bulanan.
+          Agregasi real-time dari seluruh data yang sudah tercatat - laporan manajemen bulanan.
         </p>
       </div>
 

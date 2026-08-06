@@ -59,7 +59,7 @@ export default function BepPage() {
     <>
       <PageHeader
         title="Pendapatan & BEP"
-        description="Titik impas produksi di mana kebun mulai untung — kunci untuk kebun baru/replanting menilai kapan investasi kembali."
+        description="Titik impas produksi di mana kebun mulai untung - kunci untuk kebun baru/replanting menilai kapan investasi kembali."
         category="Produksi & Ekonomi"
       />
       <div className="grid gap-6 px-6 py-6 lg:px-10 xl:grid-cols-2">

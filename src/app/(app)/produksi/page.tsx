@@ -15,7 +15,7 @@ import { estimasiProduksi, estimasiProduksiBulanan } from "@/lib/engine/produksi
 import type { ProduksiResult } from "@/lib/engine/types"
 
 const KELAS_LAHAN = [
-  { v: "1", label: "Kelas I (1.0) — lahan ideal" },
+  { v: "1", label: "Kelas I (1.0) - lahan ideal" },
   { v: "0.9", label: "Kelas II (0.9)" },
   { v: "0.8", label: "Kelas III (0.8)" },
   { v: "0.7", label: "Kelas IV (0.7)" },

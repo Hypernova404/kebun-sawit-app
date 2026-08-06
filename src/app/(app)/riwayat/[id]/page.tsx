@@ -54,7 +54,7 @@ export default function RiwayatDetailPage({ params }: { params: Promise<{ id: st
   }
 
   const renderValue = (v: unknown): string => {
-    if (v == null) return "—"
+    if (v == null) return "-"
     if (typeof v === "number") return v.toLocaleString("id-ID", { maximumFractionDigits: 4 })
     if (typeof v === "boolean") return v ? "Ya" : "Tidak"
     if (typeof v === "string") return v

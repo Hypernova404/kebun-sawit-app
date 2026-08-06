@@ -41,7 +41,7 @@ export default async function SayaPage() {
             </div>
             <div className="min-w-0">
               <p className="truncate text-lg font-semibold">{user.name ?? "Pengguna"}</p>
-              <p className="truncate text-sm text-muted-foreground">{user.email ?? "—"}</p>
+              <p className="truncate text-sm text-muted-foreground">{user.email ?? "-"}</p>
             </div>
           </CardContent>
         </Card>

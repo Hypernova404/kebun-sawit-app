@@ -63,7 +63,7 @@ export default function PopulasiPage() {
           <CardContent className="flex flex-col gap-4">
             <NumberField id="luas" label="Luas lahan" unit="ha" value={luas} onChange={setLuas} placeholder="mis. 30" />
             <NumberField id="jarak" label="Jarak antar tanaman" unit="m" value={jarak} onChange={setJarak} placeholder="mis. 9" hint="Di luar 7–10 m muncul peringatan, tetap bisa dihitung." />
-            <NumberField id="jarak-baris" label="Jarak antar baris" unit="m" value={jarakBaris} onChange={setJarakBaris} placeholder="mis. 7.8" hint="Diisi manual — jarak antar baris tanaman di lapangan." />
+            <NumberField id="jarak-baris" label="Jarak antar baris" unit="m" value={jarakBaris} onChange={setJarakBaris} placeholder="mis. 7.8" hint="Diisi manual - jarak antar baris tanaman di lapangan." />
             {struktur && <BlokSelect struktur={struktur} value={blokId} onChange={setBlokId} allowNone />}
             <Button onClick={hitung} className="mt-2 w-full">
               Hitung
