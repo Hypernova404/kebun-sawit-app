@@ -108,13 +108,32 @@ describe("Menu 9 — BEP", () => {
 })
 
 describe("Menu 11 — Kebutuhan Pemanen", () => {
-  it("600 ha × 23 t/ha, rotasi 7, kapasitas 500 → ceil", () => {
+  it("600 ha × 23 t/ha, rotasi 7, kapasitas 800 → ceil", () => {
     const totalKg = 600 * 23 * 1000
-    const r = hitungKebutuhanPemanen(totalKg, 7, 500)
-    expect(r.data!.jumlah_pemanen).toBe(Math.ceil(totalKg / (500 * 7)))
+    const r = hitungKebutuhanPemanen({ total_kg_siap_panen: totalKg, rotasi_hari: 7, kapasitas_per_orang_per_hari: 800 })
+    expect(r.data!.jumlah_pemanen).toBe(Math.ceil(totalKg / (800 * 7)))
+    expect(r.data!.kapasitas_efektif).toBe(800)
+  })
+  it("berbukit (0.8) → kapasitas efektif 640 dan pemanen lebih banyak", () => {
+    const totalKg = 600 * 23 * 1000
+    const datar = hitungKebutuhanPemanen({ total_kg_siap_panen: totalKg, rotasi_hari: 7 })
+    const bukit = hitungKebutuhanPemanen({ total_kg_siap_panen: totalKg, rotasi_hari: 7, topografi: "berbukit" })
+    expect(bukit.data!.kapasitas_efektif).toBe(640)
+    expect(bukit.data!.jumlah_pemanen).toBeGreaterThan(datar.data!.jumlah_pemanen)
+  })
+  it("umur > 15 thn → faktor 0.85 + warning", () => {
+    const r = hitungKebutuhanPemanen({ total_kg_siap_panen: 100000, rotasi_hari: 7, umur_tahun: 20 })
+    expect(r.data!.faktor_kinerja).toBe(0.85)
+    expect(r.data!.warning).toContain("15")
+  })
+  it("batasan hanca: jumlah pohon membatasi → diambil max", () => {
+    // 85.000 pokok, rotasi 7 → 12.143 pokok/hari; 300 pokok/pemanen → 41 pemanen
+    const r = hitungKebutuhanPemanen({ total_kg_siap_panen: 100000, rotasi_hari: 7, jumlah_pokok: 85000 })
+    expect(r.data!.jumlah_dari_pohon).toBe(41)
+    expect(r.data!.jumlah_pemanen).toBe(Math.max(Math.ceil(100000 / (800 * 7)), 41))
   })
   it("rotasi 0 → DIVISION_BY_ZERO", () => {
-    expect(hitungKebutuhanPemanen(10000, 0, 500).error?.code).toBe("DIVISION_BY_ZERO")
+    expect(hitungKebutuhanPemanen({ total_kg_siap_panen: 10000, rotasi_hari: 0 }).error?.code).toBe("DIVISION_BY_ZERO")
   })
 })
 

@@ -83,6 +83,11 @@ export type LabaRugi = {
 export type KebutuhanPemanenResult = {
   jumlah_pemanen: number
   total_kg_siap_panen: number
+  kapasitas_efektif: number
+  jumlah_dari_tonase: number
+  jumlah_dari_pohon: number | null
+  faktor_kinerja: number
+  warning: string | null
 }
 
 export type KonversiResult = {
