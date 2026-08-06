@@ -13,7 +13,7 @@ import { NumberField, parseNum } from "@/components/form-field"
 import { BlokSelect } from "@/components/blok-select"
 import { useStruktur } from "@/components/use-struktur"
 import { saveHistory } from "@/components/calc-save"
-import { hitungKebutuhanPupukBlok } from "@/lib/engine/kebutuhan-pupuk"
+import { hitungKebutuhanPupukBlok, PERSEN_SUSUT_DEFAULT } from "@/lib/engine/kebutuhan-pupuk"
 import { BERAT_PER_SAK, HARGA_PUPUK_KALIMANTAN } from "@/lib/engine/harga"
 import type { PupukBlokItem } from "@/lib/engine/types"
 
@@ -24,6 +24,7 @@ export default function KebutuhanPupukPage() {
   const [blokId, setBlokId] = useState("")
   const [tahun, setTahun] = useState(String(new Date().getFullYear()))
   const [wilayah, setWilayah] = useState("Kalimantan Barat")
+  const [persenSusut, setPersenSusut] = useState(String(PERSEN_SUSUT_DEFAULT))
   const [harga, setHarga] = useState<Record<string, string>>(
     Object.fromEntries(Object.entries(HARGA_PUPUK_KALIMANTAN).map(([k, v]) => [k, String(v)]))
   )
@@ -45,18 +46,15 @@ export default function KebutuhanPupukPage() {
     const hargaMap: Record<string, number> = {}
     for (const [k, v] of Object.entries(harga)) {
       const n = parseNum(v)
-      if (n == null || n <= 0) {
-        setError(`Harga ${k} tidak valid`)
-        return null
-      }
-      hargaMap[k] = n
+      if (n != null && n > 0) hargaMap[k] = n
     }
     const r = hitungKebutuhanPupukBlok(
       { tahun_tanam: blok.tahunTanam, jenis_lahan: blok.jenisLahan, jumlah_pokok: blok.jumlahPokok },
       t,
       wilayah,
       hargaMap,
-      BERAT_PER_SAK
+      BERAT_PER_SAK,
+      parseNum(persenSusut) ?? PERSEN_SUSUT_DEFAULT
     )
     if (!r.success) {
       setError(r.error!.message)
@@ -72,7 +70,7 @@ export default function KebutuhanPupukPage() {
     if (!res) return
     saveHistory(
       "kebutuhan_pupuk",
-      { blok_id: res.blok.id, tahun: res.t, wilayah, harga_pupuk: harga, berat_per_sak: BERAT_PER_SAK },
+      { blok_id: res.blok.id, tahun: res.t, wilayah, harga_pupuk: harga, berat_per_sak: BERAT_PER_SAK, persen_susut: parseNum(persenSusut) ?? PERSEN_SUSUT_DEFAULT },
       res.r,
       res.blok.id,
       res.blok.kode
@@ -102,21 +100,29 @@ export default function KebutuhanPupukPage() {
             {struktur && <BlokSelect struktur={struktur} value={blokId} onChange={setBlokId} />}
             <div className="grid grid-cols-2 gap-4">
               <NumberField id="tahun" label="Tahun" unit="" value={tahun} onChange={setTahun} />
-              <div className="flex flex-col gap-1.5">
-                <Label>Wilayah</Label>
-                <Select value={wilayah} onValueChange={(v) => setWilayah(v ?? "Kalimantan Barat")}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {WILAYAH.map((w) => (
-                      <SelectItem key={w} value={w}>
-                        {w}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <NumberField
+                id="susut"
+                label="Buffer susut"
+                unit="%"
+                value={persenSusut}
+                onChange={setPersenSusut}
+                hint="SOP 3-5% (tumpah & sisa sak)."
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label>Wilayah</Label>
+              <Select value={wilayah} onValueChange={(v) => setWilayah(v ?? "Kalimantan Barat")}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {WILAYAH.map((w) => (
+                    <SelectItem key={w} value={w}>
+                      {w}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid grid-cols-2 gap-4">
               {Object.entries(HARGA_PUPUK_KALIMANTAN).map(([jenis, defaultValue]) => (
@@ -175,6 +181,8 @@ export default function KebutuhanPupukPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Jenis</TableHead>
+                      <TableHead className="text-right">Dasar (kg)</TableHead>
+                      <TableHead className="text-right">Susut (kg)</TableHead>
                       <TableHead className="text-right">Total (kg)</TableHead>
                       <TableHead className="text-right">Sak (50 kg)</TableHead>
                       <TableHead className="text-right">Biaya</TableHead>
@@ -184,6 +192,8 @@ export default function KebutuhanPupukPage() {
                     {result.map((item) => (
                       <TableRow key={item.jenis}>
                         <TableCell className="font-medium">{item.jenis}</TableCell>
+                        <TableCell className="num text-right">{item.dosis_dasar_kg.toLocaleString("id-ID")}</TableCell>
+                        <TableCell className="num text-right">{item.susut_kg.toLocaleString("id-ID")}</TableCell>
                         <TableCell className="num text-right">{item.total_kg.toLocaleString("id-ID")}</TableCell>
                         <TableCell className="num text-right">{item.jumlah_sak}</TableCell>
                         <TableCell className="num text-right">Rp {item.biaya.toLocaleString("id-ID")}</TableCell>

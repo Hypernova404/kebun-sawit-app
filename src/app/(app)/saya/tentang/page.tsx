@@ -30,6 +30,18 @@ export default function TentangPage() {
                 <Badge variant="secondary">Prisma + Turso</Badge>
               </div>
             </div>
+            <div className="flex flex-col items-center gap-2 border-t border-border pt-6">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                Tim Pengembang
+              </h3>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                {["Dani Supriadi", "Jeri RajaGukGuk", "Primashita Rahmadina", "Mega Lisanti Sinurat"].map((nama) => (
+                  <Badge key={nama} variant="outline" className="text-xs">
+                    {nama}
+                  </Badge>
+                ))}
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

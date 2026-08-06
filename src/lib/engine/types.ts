@@ -58,6 +58,8 @@ export type JadwalItem = {
 
 export type PupukBlokItem = {
   jenis: string
+  dosis_dasar_kg: number
+  susut_kg: number
   total_kg: number
   jumlah_sak: number
   biaya: number
