@@ -65,6 +65,8 @@ export type PupukBlokItem = {
 
 export type ProduksiResult = {
   ton_per_ha: number
+  ton_per_ha_min: number
+  ton_per_ha_max: number
   total_ton: number
   warning: string | null
 }

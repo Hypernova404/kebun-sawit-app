@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { estimasiProduksi, hitungRendemen, lookupKurvaProduksi } from "../produksi"
+import { estimasiProduksi, estimasiProduksiBulanan, hitungRendemen, lookupKurvaProduksi } from "../produksi"
 import { hitungBEP, hitungLabaRugi, hitungPendapatanPengiriman, hitungPendapatanSortasi } from "../transaksi"
 import { hitungKebutuhanPemanen } from "../manajemen"
 import { konversi } from "../konversi"
@@ -27,6 +27,27 @@ describe("Menu 6 — Estimasi Produksi", () => {
 
   it("faktor kelas lahan invalid → error", () => {
     expect(estimasiProduksi(10, 30, 1.5).error?.code).toBe("INVALID_INPUT")
+  })
+
+  it("hasil memuat rentang min-max", () => {
+    const r = estimasiProduksi(10, 1)
+    expect(r.data!.ton_per_ha_min).toBe(23)
+    expect(r.data!.ton_per_ha_max).toBe(30)
+    expect(r.data!.ton_per_ha).toBe(26.5)
+  })
+})
+
+describe("Menu 6b — Faktor musiman produksi", () => {
+  it("Januari (0.80) dan September (1.22) menaikkan/menurunkan proyeksi bulanan", () => {
+    const jan = estimasiProduksiBulanan(10, 30, 1)
+    const sep = estimasiProduksiBulanan(10, 30, 9)
+    expect(jan.data!.indeks_musiman).toBe(0.8)
+    expect(sep.data!.indeks_musiman).toBe(1.22)
+    expect(jan.data!.ton_bulan_ini).toBeLessThan(sep.data!.ton_bulan_ini)
+    expect(jan.data!.ton_bulan_ini).toBeCloseTo((26.5 * 0.8) / 12 * 30, 1)
+  })
+  it("bulan 13 → INVALID_INPUT", () => {
+    expect(estimasiProduksiBulanan(10, 30, 13).error?.code).toBe("INVALID_INPUT")
   })
 })
 
@@ -159,14 +180,15 @@ describe("Menu 12 — Konversi", () => {
 })
 
 describe("Kurva produksi boundary", () => {
-  it("umur 3 → 5, 4 → 14, 5 → 17, 8 → 21.5, 16 → 26.5, 20 → 23.5, 25 → 20", () => {
-    expect(lookupKurvaProduksi(3)).toBe(5)
-    expect(lookupKurvaProduksi(4)).toBe(14)
-    expect(lookupKurvaProduksi(5)).toBe(17)
-    expect(lookupKurvaProduksi(8)).toBe(21.5)
-    expect(lookupKurvaProduksi(16)).toBe(26.5)
-    expect(lookupKurvaProduksi(20)).toBe(23.5)
-    expect(lookupKurvaProduksi(25)).toBe(20)
-    expect(lookupKurvaProduksi(30)).toBe(16)
+  it("umur 3 → [4,6], 4 → [12,16], 5 → [15,19], 7-8 → [24,28], 16 → [23,30], 20 → [22,25], 25 → [18,22], 30 → [14,18]", () => {
+    expect(lookupKurvaProduksi(3)).toEqual([4, 6])
+    expect(lookupKurvaProduksi(4)).toEqual([12, 16])
+    expect(lookupKurvaProduksi(5)).toEqual([15, 19])
+    expect(lookupKurvaProduksi(7)).toEqual([24, 28])
+    expect(lookupKurvaProduksi(8)).toEqual([24, 28])
+    expect(lookupKurvaProduksi(16)).toEqual([23, 30])
+    expect(lookupKurvaProduksi(20)).toEqual([22, 25])
+    expect(lookupKurvaProduksi(25)).toEqual([18, 22])
+    expect(lookupKurvaProduksi(30)).toEqual([14, 18])
   })
 })

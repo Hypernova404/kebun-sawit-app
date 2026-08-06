@@ -5,21 +5,32 @@ const KURVA_PRODUKSI: [number, number, number][] = [
   [4, 12, 16],
   [5, 15, 19],
   [6, 20, 23],
+  [7, 24, 28],
   [9, 23, 30],
   [17, 22, 25],
   [21, 18, 22],
   [26, 14, 18],
 ]
 
-export function lookupKurvaProduksi(umur_tahun: number): number {
+export function lookupKurvaProduksi(umur_tahun: number): [number, number] {
   for (let i = 0; i < KURVA_PRODUKSI.length; i++) {
     const [min, low, high] = KURVA_PRODUKSI[i]
     const nextMin = KURVA_PRODUKSI[i + 1]?.[0]
     if (umur_tahun >= min && (nextMin == null || umur_tahun < nextMin)) {
-      return Math.round(((low + high) / 2) * 100) / 100
+      return [low, high]
     }
   }
-  return 0
+  return [0, 0]
+}
+
+// Indeks musiman produksi TBS Indonesia: rendah Jan–Mar, puncak Sep–Nov
+const INDEKS_MUSIMAN: number[] = [0.8, 0.74, 0.8, 0.9, 1.01, 1.06, 1.12, 1.17, 1.22, 1.17, 1.06, 0.96]
+
+export function faktorMusiman(bulan: number): number {
+  if (bulan < 1 || bulan > 12) {
+    throw new Error("bulan harus 1-12")
+  }
+  return INDEKS_MUSIMAN[bulan - 1]
 }
 
 export function estimasiProduksi(umur_tahun: number, luas_ha: number, faktor_kelas_lahan = 1.0): EngineResult<ProduksiResult> {
@@ -27,15 +38,39 @@ export function estimasiProduksi(umur_tahun: number, luas_ha: number, faktor_kel
     return fail("INVALID_INPUT", "luas_ha harus > 0")
   }
   if (umur_tahun < 3) {
-    return ok({ ton_per_ha: 0, total_ton: 0, warning: "TBM belum berproduksi" })
+    return ok({ ton_per_ha: 0, ton_per_ha_min: 0, ton_per_ha_max: 0, total_ton: 0, warning: "TBM belum berproduksi" })
   }
   if (faktor_kelas_lahan < 0.5 || faktor_kelas_lahan > 1.0) {
     return fail("INVALID_INPUT", "faktor_kelas_lahan harus antara 0.5-1.0")
   }
-  const base = lookupKurvaProduksi(umur_tahun)
+  const [low, high] = lookupKurvaProduksi(umur_tahun)
+  const base = Math.round(((low + high) / 2) * 100) / 100
   const total_ton = Math.round(base * faktor_kelas_lahan * luas_ha * 100) / 100
   const warning = umur_tahun > 25 ? "Umur > 25 tahun, produktivitas menurun — pertimbangkan replanting" : null
-  return ok({ ton_per_ha: base, total_ton, warning })
+  return ok({
+    ton_per_ha: base,
+    ton_per_ha_min: low,
+    ton_per_ha_max: high,
+    total_ton,
+    warning,
+  })
+}
+
+export function estimasiProduksiBulanan(
+  umur_tahun: number,
+  luas_ha: number,
+  bulan: number,
+  faktor_kelas_lahan = 1.0
+): EngineResult<{ ton_bulan_ini: number; ton_per_ha_bulan_ini: number; indeks_musiman: number }> {
+  const r = estimasiProduksi(umur_tahun, luas_ha, faktor_kelas_lahan)
+  if (!r.success) return fail(r.error!.code, r.error!.message)
+  if (bulan < 1 || bulan > 12) {
+    return fail("INVALID_INPUT", "bulan harus 1-12")
+  }
+  const indeks = faktorMusiman(bulan)
+  const ton_per_ha_bulan_ini = Math.round(((r.data!.ton_per_ha * indeks) / 12) * 100) / 100
+  const ton_bulan_ini = Math.round((r.data!.total_ton * indeks) / 12 * 100) / 100
+  return ok({ ton_bulan_ini, ton_per_ha_bulan_ini, indeks_musiman: indeks })
 }
 
 const TABEL_RENDEMEN: Record<string, Record<string, { cpo: number; kernel: number }>> = {
