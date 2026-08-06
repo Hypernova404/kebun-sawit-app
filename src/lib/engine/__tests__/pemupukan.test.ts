@@ -124,15 +124,38 @@ describe("generateJadwalTahunan + Menu 5", () => {
     const r = hitungKebutuhanPupukBlok(blok, 2026, "Kalimantan Barat", HARGA_PUPUK_KALIMANTAN)
     expect(r.success).toBe(true)
     const urea = r.data!.find((i) => i.jenis === "Urea")!
-    expect(urea.total_kg).toBeCloseTo(2.5 * 4290, 1)
+    expect(urea.dosis_dasar_kg).toBeCloseTo(2.5 * 4290, 1)
+    expect(urea.total_kg).toBeCloseTo(2.5 * 4290 * 1.05, 1) // susut default 5%
+    expect(urea.susut_kg).toBeCloseTo(2.5 * 4290 * 0.05, 1)
     expect(urea.jumlah_sak).toBe(Math.ceil(urea.total_kg / 50))
     expect(urea.biaya).toBe(Math.round(urea.total_kg * HARGA_PUPUK_KALIMANTAN.Urea))
   })
 
-  it("harga pupuk belum diisi → NOT_FOUND", () => {
-    const r = hitungKebutuhanPupukBlok(blok, 2026, "Kalimantan Barat", { Urea: 100 })
-    expect(r.success).toBe(false)
-    expect(r.error!.code).toBe("NOT_FOUND")
+  it("harga pupuk kosong → fallback ke HARGA_PUPUK_KALIMANTAN, bukan error", () => {
+    const r = hitungKebutuhanPupukBlok(blok, 2026, "Kalimantan Barat", {})
+    expect(r.success).toBe(true)
+    const urea = r.data!.find((i) => i.jenis === "Urea")!
+    expect(urea.biaya).toBe(Math.round(urea.total_kg * HARGA_PUPUK_KALIMANTAN.Urea))
+  })
+
+  it("harga overridden sebagian → jenis yang diisi pakai harga override", () => {
+    const r = hitungKebutuhanPupukBlok(blok, 2026, "Kalimantan Barat", { Urea: 20000 })
+    const urea = r.data!.find((i) => i.jenis === "Urea")!
+    expect(urea.biaya).toBe(Math.round(urea.total_kg * 20000))
+    const mop = r.data!.find((i) => i.jenis === "MOP")!
+    expect(mop.biaya).toBe(Math.round(mop.total_kg * HARGA_PUPUK_KALIMANTAN.MOP))
+  })
+
+  it("persen susut 0 → total = dosis dasar", () => {
+    const r = hitungKebutuhanPupukBlok(blok, 2026, "Kalimantan Barat", HARGA_PUPUK_KALIMANTAN, 50, 0)
+    const urea = r.data!.find((i) => i.jenis === "Urea")!
+    expect(urea.total_kg).toBeCloseTo(2.5 * 4290, 1)
+    expect(urea.susut_kg).toBe(0)
+  })
+
+  it("persen susut di luar 0-15% → INVALID_INPUT", () => {
+    const r = hitungKebutuhanPupukBlok(blok, 2026, "Kalimantan Barat", HARGA_PUPUK_KALIMANTAN, 50, 20)
+    expect(r.error?.code).toBe("INVALID_INPUT")
   })
 
   it("blok TBM → dosis gram dikonversi ke kg", () => {
