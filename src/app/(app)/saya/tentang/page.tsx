@@ -35,7 +35,7 @@ export default function TentangPage() {
                 Tim Pengembang
               </h3>
               <div className="flex flex-wrap items-center justify-center gap-2">
-                {["Dani Supriadi", "Jeri RajaGukGuk", "Primashita Rahmadina", "Mega Lisanti Sinurat"].map((nama) => (
+                {["Dani Supriadi", "Jeri Raja GukGuk", "Primashita Rahmadina", "Mega Lisanti Sinurat"].map((nama) => (
                   <Badge key={nama} variant="outline" className="text-xs">
                     {nama}
                   </Badge>
