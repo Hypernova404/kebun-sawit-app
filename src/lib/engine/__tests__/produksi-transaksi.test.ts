@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { estimasiProduksi, hitungRendemen, lookupKurvaProduksi } from "../produksi"
-import { hitungBEP, hitungLabaRugi, hitungPendapatanPengiriman } from "../transaksi"
+import { hitungBEP, hitungLabaRugi, hitungPendapatanPengiriman, hitungPendapatanSortasi } from "../transaksi"
 import { hitungKebutuhanPemanen } from "../manajemen"
 import { konversi } from "../konversi"
 
@@ -56,6 +56,35 @@ describe("Menu 8 — Pengiriman TBS", () => {
   })
   it("tonase 0 → INVALID_INPUT", () => {
     expect(hitungPendapatanPengiriman(0, 3726).error?.code).toBe("INVALID_INPUT")
+  })
+  it("tanpa sortasi → pendapatan = nilai kotor", () => {
+    const r = hitungPendapatanSortasi(25, 3726, { persen_mentah: 0, persen_mengkal: 0, persen_busuk: 0 })
+    expect(r.data!.pendapatan).toBe(93150000)
+    expect(r.data!.tonase_bersih).toBe(25)
+    expect(r.data!.potongan_rp).toBe(0)
+  })
+  it("10% mentah → potongan 50% × 10% = 5% nilai", () => {
+    const r = hitungPendapatanSortasi(25, 3726, { persen_mentah: 10, persen_mengkal: 0, persen_busuk: 0 })
+    expect(r.data!.kg_dipotong).toBe(1250) // 25.000 kg × 5%
+    expect(r.data!.tonase_bersih).toBe(23.75)
+    expect(r.data!.potongan_rp).toBe(4657500)
+    expect(r.data!.pendapatan).toBe(88492500)
+  })
+  it("10% mengkal → potongan 15% × 10% = 1,5% nilai", () => {
+    const r = hitungPendapatanSortasi(25, 3726, { persen_mentah: 0, persen_mengkal: 10, persen_busuk: 0 })
+    expect(r.data!.potongan_persen).toBeCloseTo(1.5, 2)
+    expect(r.data!.pendapatan).toBe(91752750)
+  })
+  it("100% busuk → tidak dibayar", () => {
+    const r = hitungPendapatanSortasi(25, 3726, { persen_mentah: 0, persen_mengkal: 0, persen_busuk: 100 })
+    expect(r.data!.pendapatan).toBe(0)
+    expect(r.data!.kg_dipotong).toBe(25000)
+  })
+  it("total sortasi > 100% → INVALID_INPUT", () => {
+    expect(hitungPendapatanSortasi(25, 3726, { persen_mentah: 60, persen_mengkal: 50, persen_busuk: 0 }).error?.code).toBe("INVALID_INPUT")
+  })
+  it("persentase negatif → INVALID_INPUT", () => {
+    expect(hitungPendapatanSortasi(25, 3726, { persen_mentah: -1, persen_mengkal: 0, persen_busuk: 0 }).error?.code).toBe("INVALID_INPUT")
   })
 })
 
