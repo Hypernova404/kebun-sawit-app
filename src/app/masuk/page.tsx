@@ -21,6 +21,9 @@ export default async function MasukPage() {
         <p className="mt-6 text-center text-xs text-muted-foreground">
           Data tersimpan aman per akun — setiap pengguna punya kebun sendiri.
         </p>
+        <p className="mt-4 text-center text-xs font-medium text-muted-foreground/80">
+          Project by Kelompok 4
+        </p>
       </div>
     </div>
   );
