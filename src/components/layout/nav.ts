@@ -64,6 +64,11 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "/riwayat", label: "Riwayat & Laporan", icon: History },
     ],
   },
+  {
+    kategori: "Akun",
+    icon: CircleUser,
+    items: [{ href: "/saya", label: "Menu Saya", icon: CircleUser }],
+  },
 ]
 
 export const BOTTOM_NAV = [
