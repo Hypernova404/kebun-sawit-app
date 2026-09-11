@@ -8,3 +8,5 @@ generated
 .next/
 tsconfig.tsbuildinfo
 .open-next
+.vercel
+.env*
