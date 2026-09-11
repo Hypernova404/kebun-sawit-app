@@ -1,7 +1,6 @@
 import {
   Calculator,
   History,
-  LayoutDashboard,
   Sprout,
   TreePine,
   type LucideIcon,
@@ -27,7 +26,6 @@ export const NAV_GROUPS: NavGroup[] = [
 ]
 
 export const BOTTOM_NAV = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/populasi", label: "Populasi", icon: TreePine },
   { href: "/bibit", label: "Bibit", icon: Sprout },
   { href: "/riwayat", label: "Riwayat", icon: History },

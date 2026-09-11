@@ -6,17 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { PageHeader } from "@/components/page-header"
 import { NumberField, parseNum } from "@/components/form-field"
 import { ResultPanel } from "@/components/result-panel"
-import { BlokSelect } from "@/components/blok-select"
-import { useStruktur } from "@/components/use-struktur"
 import { saveHistory } from "@/components/calc-save"
 import { hitungKebutuhanBibit } from "@/lib/engine/populasi"
 import type { BibitResult } from "@/lib/engine/types"
 
 export default function BibitPage() {
-  const struktur = useStruktur()
   const [pokok, setPokok] = useState("")
   const [persen, setPersen] = useState("7")
-  const [blokId, setBlokId] = useState("")
   const [result, setResult] = useState<BibitResult | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -36,7 +32,7 @@ export default function BibitPage() {
     }
     setError(null)
     setResult(r.data!)
-    saveHistory("bibit", { jumlah_pokok: Math.floor(p), persen_sulaman: ps / 100 }, r.data!, blokId === "__none__" ? null : blokId || null)
+    saveHistory("bibit", { jumlah_pokok: Math.floor(p), persen_sulaman: ps / 100 }, r.data!)
   }
 
   return (
@@ -55,7 +51,6 @@ export default function BibitPage() {
           <CardContent className="flex flex-col gap-4">
             <NumberField id="pokok" label="Jumlah pokok (dari Menu Populasi)" unit="pokok" value={pokok} onChange={setPokok} placeholder="mis. 4290" />
             <NumberField id="persen" label="Cadangan sulaman" unit="%" value={persen} onChange={setPersen} hint="Default 7%." />
-            {struktur && <BlokSelect struktur={struktur} value={blokId} onChange={setBlokId} allowNone />}
             <Button onClick={hitung} className="mt-2 w-full">
               Hitung
             </Button>

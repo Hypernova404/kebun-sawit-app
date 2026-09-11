@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ChevronDown, Leaf, LayoutDashboard } from "lucide-react"
+import { ChevronDown, Leaf } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { BOTTOM_NAV, NAV_GROUPS } from "./nav"
 
@@ -25,16 +25,6 @@ export function Sidebar() {
           </div>
         </Link>
         <nav className="flex-1 overflow-y-auto p-3 flex flex-col gap-1">
-          <Link
-            href="/"
-            className={cn(
-              "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors",
-              pathname === "/" ? "bg-primary text-primary-foreground font-medium" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-            )}
-          >
-            <LayoutDashboard data-icon />
-            Dashboard
-          </Link>
           {NAV_GROUPS.map((group) => {
             const open = activeGroup.kategori === group.kategori
             return (

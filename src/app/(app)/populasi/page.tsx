@@ -6,8 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { PageHeader } from "@/components/page-header"
 import { NumberField, parseNum } from "@/components/form-field"
 import { ResultPanel } from "@/components/result-panel"
-import { BlokSelect } from "@/components/blok-select"
-import { useStruktur } from "@/components/use-struktur"
 import { saveHistory } from "@/components/calc-save"
 import { hitungPopulasi } from "@/lib/engine/populasi"
 import type { PopulasiResult } from "@/lib/engine/types"
@@ -19,11 +17,9 @@ const POLA_LABEL: Record<string, string> = {
 }
 
 export default function PopulasiPage() {
-  const struktur = useStruktur()
   const [luas, setLuas] = useState("")
   const [jarak, setJarak] = useState("")
   const [jarakBaris, setJarakBaris] = useState("")
-  const [blokId, setBlokId] = useState("")
   const [result, setResult] = useState<PopulasiResult | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -44,7 +40,7 @@ export default function PopulasiPage() {
     }
     setError(null)
     setResult(r.data!)
-    saveHistory("populasi", { luas_ha: l, jarak_tanam: j, jarak_baris: jb }, r.data!, blokId === "__none__" ? null : blokId || null)
+    saveHistory("populasi", { luas_ha: l, jarak_tanam: j, jarak_baris: jb }, r.data!)
   }
 
   return (
@@ -64,7 +60,6 @@ export default function PopulasiPage() {
             <NumberField id="luas" label="Luas lahan" unit="ha" value={luas} onChange={setLuas} placeholder="mis. 30" />
             <NumberField id="jarak" label="Jarak antar tanaman" unit="m" value={jarak} onChange={setJarak} placeholder="mis. 9" hint="Di luar 7–10 m muncul peringatan, tetap bisa dihitung." />
             <NumberField id="jarak-baris" label="Jarak antar baris" unit="m" value={jarakBaris} onChange={setJarakBaris} placeholder="mis. 7.8" hint="Diisi manual - jarak antar baris tanaman di lapangan." />
-            {struktur && <BlokSelect struktur={struktur} value={blokId} onChange={setBlokId} allowNone />}
             <Button onClick={hitung} className="mt-2 w-full">
               Hitung
             </Button>
