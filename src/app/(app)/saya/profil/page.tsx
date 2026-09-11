@@ -1,12 +1,10 @@
-import { redirect } from "next/navigation"
 import { BadgeCheck, Mail, UserRound } from "lucide-react"
-import { getSessionUser } from "@/lib/session"
+import { getLocalUser } from "@/lib/session"
 import { PageHeader } from "@/components/page-header"
 import { Card, CardContent } from "@/components/ui/card"
 
 export default async function ProfilPage() {
-  const user = await getSessionUser()
-  if (!user) redirect("/masuk")
+  const user = await getLocalUser()
 
   const initial = (user.name?.trim() ?? user.email?.[0] ?? "S").slice(0, 1).toUpperCase()
 
@@ -15,7 +13,7 @@ export default async function ProfilPage() {
       <PageHeader
         backHref="/saya"
         title="Profil Saya"
-        description="Data akun yang terhubung. Informasi diambil langsung dari akun Google-mu."
+        description="Data akun aplikasi ini. Aplikasi dipakai tanpa login."
         category="Akun"
       />
       <div className="flex flex-col gap-6 px-6 py-6 lg:px-10">
@@ -40,7 +38,7 @@ export default async function ProfilPage() {
               </p>
               <span className="mt-1 flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
                 <BadgeCheck data-icon className="size-3.5 text-primary" />
-                Masuk dengan Google
+                Tanpa login
               </span>
             </div>
           </CardContent>

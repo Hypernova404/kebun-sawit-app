@@ -1,10 +1,8 @@
-import { redirect } from "next/navigation"
 import Link from "next/link"
-import { ChevronRight, CircleUser, HelpCircle, Info, Leaf, Map, Settings, History } from "lucide-react"
-import { getSessionUser } from "@/lib/session"
+import { ChevronRight, CircleUser, HelpCircle, Info, Map, Settings, History } from "lucide-react"
 import { PageHeader } from "@/components/page-header"
 import { Card, CardContent } from "@/components/ui/card"
-import { KeluarButton } from "@/components/layout/keluar-button"
+import { getLocalUser } from "@/lib/session"
 
 const MENU = [
   { href: "/saya/profil", label: "Profil Saya", description: "Data akun dan identitas pengguna", icon: CircleUser },
@@ -16,9 +14,7 @@ const MENU = [
 ]
 
 export default async function SayaPage() {
-  const user = await getSessionUser()
-  if (!user) redirect("/masuk")
-
+  const user = await getLocalUser()
   const initial = (user.name?.trim() ?? user.email?.[0] ?? "S").slice(0, 1).toUpperCase()
 
   return (
@@ -64,16 +60,6 @@ export default async function SayaPage() {
                 <ChevronRight data-icon className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
               </Link>
             ))}
-            <div className="flex items-center gap-3 px-2 py-3.5">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
-                <Leaf data-icon className="size-4.5" />
-              </span>
-              <span className="flex min-w-0 flex-1 flex-col">
-                <span className="text-sm font-medium">Keluar</span>
-                <span className="truncate text-xs text-muted-foreground">Akhiri sesi di perangkat ini</span>
-              </span>
-              <KeluarButton className="flex items-center gap-1.5 rounded-lg border border-destructive/30 px-3 py-1.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground" />
-            </div>
           </CardContent>
         </Card>
       </div>

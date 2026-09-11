@@ -1,7 +1,5 @@
 import { fail, ok, type EngineResult, type KonversiResult } from "./types"
 
-type Satuan = "ha" | "m2" | "tumbak" | "ton" | "kg" | "kuintal"
-
 function keM2(nilai: number, satuan: string, tumbak: number): number | null {
   switch (satuan) {
     case "ha": return nilai * 10000

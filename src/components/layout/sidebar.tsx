@@ -4,7 +4,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ChevronDown, Leaf, LayoutDashboard } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { KeluarButton } from "./keluar-button"
 import { BOTTOM_NAV, NAV_GROUPS } from "./nav"
 
 export function Sidebar() {
@@ -69,9 +68,6 @@ export function Sidebar() {
             )
           })}
         </nav>
-        <div className="border-t border-border px-4 py-3">
-          <KeluarButton />
-        </div>
       </aside>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-border bg-background lg:hidden">

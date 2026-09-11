@@ -125,7 +125,7 @@ export default function KebutuhanPupukPage() {
               </Select>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              {Object.entries(HARGA_PUPUK_KALIMANTAN).map(([jenis, defaultValue]) => (
+              {Object.entries(HARGA_PUPUK_KALIMANTAN).map(([jenis]) => (
                 <div key={jenis} className="flex flex-col gap-1.5">
                   <Label htmlFor={`harga-${jenis}`}>Harga {jenis}</Label>
                   <div className="relative">
