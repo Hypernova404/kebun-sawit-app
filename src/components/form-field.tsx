@@ -50,7 +50,11 @@ export function NumberField({
 }
 
 export function parseNum(v: string): number | null {
-  if (v.trim() === "") return null
-  const n = Number(v.replace(",", "."))
+  const s = v.trim()
+  if (s === "") return null
+  const normalized = s
+    .replace(/\.(?=\d{3}(?:\.|$))/g, "")
+    .replace(",", ".")
+  const n = Number(normalized)
   return Number.isFinite(n) ? n : null
 }
