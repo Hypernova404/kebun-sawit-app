@@ -2,12 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
-import { Download, FileText, Filter, Trash2 } from "lucide-react"
+import { Download, FileText, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { PageHeader } from "@/components/page-header"
@@ -37,24 +34,19 @@ type Entry = {
   blok_kode: string | null
 }
 
-const KATEGORI = Object.keys(LABEL_MENU)
-
 export default function RiwayatPage() {
   const [entries, setEntries] = useState<Entry[] | null>(null)
-  const [kategori, setKategori] = useState("")
-  const [blok, setBlok] = useState("")
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [busy, setBusy] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
 
-  const fetchData = useCallback(async (kategoriFilter: string | null, blokFilter: string | null) => {
-    return (await getRiwayat(kategoriFilter, blokFilter)) as Entry[]
+  const fetchData = useCallback(async () => {
+    return (await getRiwayat()) as Entry[]
   }, [])
 
   useEffect(() => {
-    const kategoriFilter = kategori && kategori !== "__all__" ? kategori : null
     let cancelled = false
-    fetchData(kategoriFilter, blok || null).then((data) => {
+    fetchData().then((data) => {
       if (cancelled) return
       setEntries(data)
       setSelected(new Set())
@@ -62,14 +54,13 @@ export default function RiwayatPage() {
     return () => {
       cancelled = true
     }
-  }, [fetchData, kategori, blok])
+  }, [fetchData])
 
   const refresh = useCallback(async () => {
-    const kategoriFilter = kategori && kategori !== "__all__" ? kategori : null
-    const data = await fetchData(kategoriFilter, blok || null)
+    const data = await fetchData()
     setEntries(data)
     setSelected(new Set())
-  }, [fetchData, kategori, blok])
+  }, [fetchData])
 
   const toggle = (id: string) => {
     setSelected((prev) => {
@@ -133,49 +124,11 @@ export default function RiwayatPage() {
   return (
     <>
       <PageHeader
-        title="Riwayat & Laporan"
-        description="Satu menu terpusat untuk seluruh histori kalkulasi dari semua menu. Pilih entri lalu unduh PDF gabungan."
-        category="Alat Bantu & Referensi"
+        title="Riwayat Hitungan"
+        description="Seluruh hasil kalkulasi tersimpan otomatis di sini."
+        category="Riwayat"
       />
       <div className="flex flex-col gap-6 px-6 py-6 lg:px-10">
-        <Card className="shadow-sm">
-          <CardContent className="flex flex-wrap items-end gap-4 pt-5">
-            <div className="flex min-w-48 flex-1 flex-col gap-1.5">
-              <Label className="flex items-center gap-1.5">
-                <Filter data-icon className="size-3.5" />
-                Kategori menu
-              </Label>
-              <Select value={kategori} onValueChange={(v) => setKategori(v ?? "")}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Semua kategori" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__all__">Semua kategori</SelectItem>
-                  {KATEGORI.map((k) => (
-                    <SelectItem key={k} value={k}>
-                      {LABEL_MENU[k]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex min-w-40 flex-1 flex-col gap-1.5">
-              <Label htmlFor="fb">Filter blok (kode)</Label>
-              <Input id="fb" placeholder="mis. A1-01" value={blok} onChange={(e) => setBlok(e.target.value)} />
-            </div>
-            <Button
-              onClick={exportPdf}
-              disabled={!entries || busy}
-              className="whitespace-nowrap min-w-48"
-            >
-              <Download data-icon="inline-start" />
-              {selected.size > 0
-                ? `Unduh Terpilih (${selected.size})`
-                : `Unduh Semua (${entries?.length ?? 0})`}
-            </Button>
-          </CardContent>
-        </Card>
-
         <Card className="shadow-sm">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between gap-2">
@@ -183,41 +136,53 @@ export default function RiwayatPage() {
                 <FileText data-icon />
                 Daftar riwayat
               </CardTitle>
-              <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-                <AlertDialogTrigger
-                  disabled={!entries || entries.length === 0 || busy}
-                  aria-label={hapusCount > 0 ? `Hapus ${hapusCount} riwayat` : "Hapus riwayat"}
-                  render={
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-muted-foreground hover:text-destructive"
-                    >
-                      <Trash2 data-icon="inline-start" className="size-4" />
-                      {selected.size > 0 ? `Hapus ${selected.size} Riwayat` : "Hapus Riwayat"}
-                    </Button>
-                  }
-                />
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      {selected.size > 0 ? `Hapus ${selected.size} riwayat` : "Hapus semua riwayat"}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {hapusCount} riwayat akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Batal</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={hapusBanyak}
-                      className="bg-destructive text-white hover:bg-destructive/90"
-                    >
-                      Hapus
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={exportPdf}
+                  disabled={!entries || busy}
+                  className="whitespace-nowrap"
+                >
+                  <Download data-icon="inline-start" />
+                  {selected.size > 0
+                    ? `Unduh Terpilih (${selected.size})`
+                    : `Unduh Semua (${entries?.length ?? 0})`}
+                </Button>
+                <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+                  <AlertDialogTrigger
+                    disabled={!entries || entries.length === 0 || busy}
+                    aria-label={hapusCount > 0 ? `Hapus ${hapusCount} riwayat` : "Hapus riwayat"}
+                    render={
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-muted-foreground hover:text-destructive"
+                      >
+                        <Trash2 data-icon="inline-start" className="size-4" />
+                        {selected.size > 0 ? `Hapus ${selected.size} Riwayat` : "Hapus Riwayat"}
+                      </Button>
+                    }
+                  />
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        {selected.size > 0 ? `Hapus ${selected.size} riwayat` : "Hapus semua riwayat"}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {hapusCount} riwayat akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Batal</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={hapusBanyak}
+                        className="bg-destructive text-white hover:bg-destructive/90"
+                      >
+                        Hapus
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
           </CardHeader>
           <CardContent>

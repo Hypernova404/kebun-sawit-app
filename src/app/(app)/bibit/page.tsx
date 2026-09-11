@@ -49,7 +49,7 @@ export default function BibitPage() {
             <CardDescription>Cadangan sulaman standar SOP: 5–10%</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            <NumberField id="pokok" label="Jumlah pokok (dari Menu Populasi)" unit="pokok" value={pokok} onChange={setPokok} placeholder="mis. 4290" />
+            <NumberField id="pokok" label="Jumlah pokok (dari Menu Populasi)" unit="pokok" value={pokok} onChange={setPokok} placeholder="4290" />
             <NumberField id="persen" label="Cadangan sulaman" unit="%" value={persen} onChange={setPersen} hint="Default 7%." />
             <Button onClick={hitung} className="mt-2 w-full">
               Hitung
